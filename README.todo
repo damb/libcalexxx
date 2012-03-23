@@ -1,0 +1,32 @@
+this is <README.todo>
+===============================================================================
+TODO for libcalexxx
+----------------------
+$Id$
+===============================================================================
+
+General:
+--------
+
+
+===============================================================================
+Implementation:
+---------------
+
+1. Dynamic CalexApplication
+  The most convenient would be if optcalex.cc would be able to manipulate and
+  configure libcalexxx completely only by using its commandline arguments
+  provided.
+  
+  This has following consequences:
+  --------------------------------
+  a) I need both a unknown system parameter which is a system parameter that
+  will be modified of the CalexApplication or rather CalexConfig and on the
+  other hand there are parameters which are passed as commandline arguments
+  which won't be modified and so are fix.
+  CalexApplication will initiate changing the unknown system parameters by only
+  calling the update function of CalexConfig passing the actual parameters.
+  The problem now is how class CalexConfig knows the meanings of the parameters
+  passed. In other words the order/meaning of the parameters must be told to
+  CalexConfig once creating an instance.
+  
