@@ -54,18 +54,27 @@ namespace calex
   /*!
    * \brief class defining a calex subsystem
    * Abstract base class for any kind of calex subsystem. Subsystems will be
-   * added to calex configuration / parameter file.
+   * added to calex configuration / parameter file.\n
+   *
+   * System parameter query function return a reference (not constant) to the
+   * members the subsystem contains. This is no problem cause only system
+   * parameters can be modified if they are instances of
+   * calex::GridSystemParameter.
    *
    * Abstract class of template method design pattern (GoF p.325).
    */
   class CalexSubsystem
   {
     public:
+      //! destructor
+      virtual ~CalexSubsystem() { delete Mper; }
+      //! query function for system type
       EsubSystemType get_type() const { return Mtype; }
       //! query function for period uncertainty
-      virtual SystemParameter const& get_per() const { return Mper; }
+      virtual SystemParameter& get_per() { return *Mper; }
       //! query function for damping uncertainty
-      virtual SystemParameter const& get_dmp() const { CALEX_abort("123"); }
+      virtual SystemParameter& get_dmp() 
+      { CALEX_abort("Illegal function call."); }
       //! query function of order of subsystem
       virtual unsigned int get_order() const = 0;
       /*! 
@@ -79,7 +88,7 @@ namespace calex
 
     protected:
       //! constructor
-      CalexSubsystem(EsubSystemType type, SystemParameter const per);
+      CalexSubsystem(EsubSystemType type, SystemParameter& per);
 
       /*!
        * write to output stream
@@ -95,7 +104,7 @@ namespace calex
       // subsystem type
       EsubSystemType Mtype;
       //! period system parameter
-      SystemParameter Mper;
+      SystemParameter* Mper;
 
   }; // class CalexFilter
 
@@ -108,8 +117,11 @@ namespace calex
        *
        * \param type Subsystem type, which must be of type EsubSystemType::LP or
        * EsubSystemType::HP.
+       * \param period system parameter
        */
-      FirstOrderSubsystem(EsubSystemType type, SystemParameter const per);
+      FirstOrderSubsystem(EsubSystemType type, SystemParameter& per);
+      //! destructor
+      virtual ~FirstOrderSubsystem() { }
       //! query function of order of subsystem
       virtual unsigned int get_order() const { return 1; }
 
@@ -132,12 +144,14 @@ namespace calex
   {
     public:
       //! constructor
-      SecondOrderSubsystem(EsubSystemType type, SystemParameter const per,
-          SystemParameter const dmp);
+      SecondOrderSubsystem(EsubSystemType type, SystemParameter& per,
+          SystemParameter& dmp);
+      //! destructor
+      virtual ~SecondOrderSubsystem() { delete Mdmp; }
       //! query function of order of subsystem
       virtual unsigned int get_order() const { return 2; }
       //! query function for damping system parameter
-      virtual SystemParameter const& get_dmp() const { return Mdmp; }
+      virtual SystemParameter& get_dmp() { return *Mdmp; }
 
     protected:
       /*!
@@ -151,7 +165,7 @@ namespace calex
     private:
       typedef CalexSubsystem Tbase;
       //! system parameter damping
-      SystemParameter Mdmp;
+      SystemParameter* Mdmp;
 
   }; // class SecondOrderFilter
 

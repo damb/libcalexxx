@@ -272,7 +272,7 @@ doxyview: $(DOXYWWWPATH)/html/index.html
 # delegate test targets
 # ---------------------
 #
-tests/%: tests/%.cc install-include libcalexxx.a
+tests/%: tests/%.cc install
 	@cd tests; echo "#############################"; $(MAKE) -s $(notdir $@)
 
 

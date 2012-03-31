@@ -13,7 +13,111 @@ General:
 Implementation:
 ---------------
 
-1. Dynamic CalexApplication
+1. CommandParser for commandline and configuration files
+  Implement a class which is able to parse the commandline arguments respective
+  system parameters and additionally options in a configuration file. The latter
+  one has less priority.
+  
+  +++++++++++++++++
+  Usual system parameters will be given with:
+
+  --sys-param=nam|val|unc
+
+  If I've got a grid system parameter which additionally represents a component
+  in my grid parameter space the command:
+
+  --sys-param=nam|start;stop;delta|unc
+
+  will do its job. If unc is equal to zero then it won't be optimized by calex.
+
+  +++++++++++++++++
+  Special system parameters (i.e. amplitude)
+
+  --amp-param=nam|val|unc
+
+  or rather
+
+  --amp-param=nam|start;stop;end|unc
+
+  +++++++++++++++++
+  First order subsystems will be configured passing the command:
+
+  --first-order=[LP,HP]|val|unc
+
+  or in case its per system parameter represents a grid system parameter
+
+  --first-order=[LP,HP]|start;stop;delta|unc
+
+  +++++++++++++++++
+  Second order subsystems will be passed with either
+
+  --second-order=[LP,HP,BP]|val1|unc1|val2|unc2
+
+  or
+
+  --second-order=[LP,HP,BP]|start1;stop1;delta1;|unc1|start2;stop2;delta2|unc2
+
+  or
+
+  --second-order=[LP,HP,BP]|start1;stop1;delta1;|unc1|val2|unc2
+
+  +++++++++++++++++
+  Implementation issues. The most beautiful solution would be to overload
+  istream operators. Then I would have to subclass or rather distiguish between
+  * SystemParameter
+  * GridSystemParameter
+  One advantage of the precedure would be that the MisGridSystemParameter flag
+  would be obsolete.
+
+  The most elegant way just would be to able to store the values directly by
+  using boost program_options library. Because of polymorphism only using
+  pointers for calex subsystems and within class CalexConfig would lead to the
+  desired effects. Then a common interface for
+
+  - CalexComponent:
+    -> SystemParameter
+        * CommonSystemParameter
+        * GridSystemParameter
+    -> Subsystem:
+        * FirstOrderSubsystem
+        * SecondOrderSubsystem
+  would be necessary. -> use Composite design pattern.
+
+  +++++++++++++++++
+  IMPORTANT NOTE:
+  liboptimize builder classes need a query function to return the order of the
+  coordinates so that a libcalexxx mapper function is able to set the ids of the
+  grid system parameters.
+  
+  +++++++++++++++++
+  To map both calex::SystemParameter together with opt::StandardParameter I'm
+  going to use multiple inheritance (MI) to create a calex::GridSystemParameter.
+  
+  The disadvantage of this approach will be the fact that in optcalex and the
+  parser module I have to work the whole time with pointers to
+  calex::GridSystemParameters so that I'm not able to use real polymorphism. As
+  a further disadvantage class CalexConfig has to use
+  calex::GridsystemParameters instead of solely calex::SystemParameters. I
+  thought about creating a 'dreaded diamond' and to inherit
+  calex::SystemParameter from opt::Parameter, too.
+
+  ----
+  Another map approach just would be to work with some kind of nested
+  generalization so that a opt::Parameter would be a member of class
+  calex::GridSystemParameter which had been created by virtual inheritance from
+  class SystemParameter. The major disadvantage of this proceeding just would be
+  that I wouldn't be able to pass a pointer of calex::GridSystemParameter to a
+  liboptimizexx global algorithm.
+
+  ----
+  Still I've to guarantee that the parameters once added to the global algorithm
+  are reordered regarding that algorithm. There will occur problems for sure if
+  I'm going to implement intelligent global algorithms which will refine the
+  grid with a subgrids of less dimensions as the father grid had before.
+
+  
+
+2. Dynamic CalexApplication
   The most convenient would be if optcalex.cc would be able to manipulate and
   configure libcalexxx completely only by using its commandline arguments
   provided.
@@ -22,6 +126,7 @@ Implementation:
   --------------------------------
   a) I need both a unknown system parameter which is a system parameter that
   will be modified of the CalexApplication or rather CalexConfig and on the
+
   other hand there are parameters which are passed as commandline arguments
   which won't be modified and so are fix.
   CalexApplication will initiate changing the unknown system parameters by only
@@ -30,3 +135,19 @@ Implementation:
   passed. In other words the order/meaning of the parameters must be told to
   CalexConfig once creating an instance.
   
+  How to reach such a behaviour?
+
+  IDEAS:
+  ------
+  Because of the fact that I've introduced a isGridSystemParameter flag to
+  distinguish grid system parameters and simple system parameters while adding
+  any kind of system parameter to a calex configuration file.
+  Next I've to solve the question how to manage the problem that a configuration
+  file is able to order the coordinate values passed to the correct system
+  parameter. There must be a flag or a key variable which elaborates me this
+  connection. There are several ways to manage this so that I'll introduce a key
+  flag (std::string) for every grid system parameter. Additionally I could use
+  the Mid string variable to store the key values to connect both system
+  parameters and grid system parameters.
+  Notice: The Mnam member string is not sufficient to store a the key value
+  because there could be ambiguities if several subsystems are in use.

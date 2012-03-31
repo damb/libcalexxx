@@ -65,11 +65,11 @@ namespace calex
    * store the result data within the liboptimizexx parameter space grids'
    * nodes.
    *
-   * \todo The class template CalexApplication yet isn't really modular in a
-   * sense that it is able to handle the manipulation of an aribrary number
-   * calex system of calex system parameters.
-   * So I should aim on writing a fully configurable calex application class
-   * template. Suggestions?
+   * \note calex::CalexApplication only will call calex::CalexConfig::update and
+   * pass the current coordinates.
+   * \code
+   * McalexConfig->update<Ctype>(node->getCoordinates());
+   * \endcode
    */
   template <typename Ctype>
   class CalexApplication : 
@@ -80,12 +80,8 @@ namespace calex
        * constructor
        *
        * \param config Calex parameter file configuration.
-       * \param per_unc uncertainty for seismometer period
-       * \param dmp_unc uncertainty for seismometer damping
        */
-      CalexApplication(CalexConfig* config, double const per_unc,
-          double const dmp_unc) : McalexConfig(config), Mper_unc(per_unc),
-          Mdmp_unc(dmp_unc)
+      CalexApplication(CalexConfig* config) : McalexConfig(config)
       { }
       //! Visit function for a liboptimizexx grid.
       /*!
@@ -106,10 +102,6 @@ namespace calex
     private:
       //! calex parameter file configuration
       CalexConfig* McalexConfig;
-      //! uncertainty for period
-      double Mper_unc;
-      //! uncertainty for damping
-      double Mdmp_unc;
 
   }; // class template CalexApplication
 
@@ -117,22 +109,7 @@ namespace calex
   template <typename Ctype>
   void CalexApplication<Ctype>::operator()(opt::Node<Ctype, TresultType>* node)
   {
-    // configure calex parameter file
-    /*! 
-     * \note{Delegate the updating functionalism of the parameter file (class
-     * calex::CalexConfig) to calex::CalexConfig and only call its
-     * calex::Calexconfig::update function passing the corresponding parameters
-     * (node coordinates). A positive side effect of this approach is that
-     * additional system parameters and subsystems needn't to be deleted
-     * anymore. Additionally a calex system parameter must provide a variable to
-     * store the corresponding gridId if unknown.}
-     */
-    std::vector<Ctype> const& params = node->getCoordinates();
-    CalexSubsystem* lp2 = new SecondOrderSubsystem(BP, 
-        SystemParameter("per", params[0], Mper_unc),
-        SystemParameter("dmp", params[1], Mdmp_unc));
-    McalexConfig->set_comment("calex liboptimizexx application");
-    McalexConfig->add_subsystem(lp2);
+    McalexConfig->update<Ctype>(node->getCoordinates());
 
     // write calex parameter file to disk
 #if BOOST_FILESYSTEM_VERSION == 2
@@ -150,7 +127,6 @@ namespace calex
     CALEX_assert(!system(calex_command.c_str()), 
         "Error while executing extern calex program.");
 
-
     // read calex result data of file *.out
 #if BOOST_FILESYSTEM_VERSION == 2
     fs::path out_path(std::string(param_path.stem()+".out"));
@@ -165,12 +141,10 @@ namespace calex
     ifs.close();
     
     // delete *.par and temporary calex files
-    CALEX_assert(!(fs::remove(param_path) && fs::remove(out_path) &&
+    CALEX_assert(fs::remove(param_path) && fs::remove(out_path) &&
         fs::remove("synt") && fs::remove("einf") && fs::remove("ausf") && 
-        fs::remove("rest") && fs::remove("winplot.par")),
+        fs::remove("rest") && fs::remove("winplot.par"),
         "Error while removing current calex files");
-    McalexConfig->clear_subsystems();
-    delete lp2;
 
   } // function CalexApplication<Ctype>::operator()
 

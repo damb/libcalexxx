@@ -65,12 +65,12 @@ namespace calex
 
   /*-------------------------------------------------------------------------*/
   CalexSubsystem::CalexSubsystem(EsubSystemType type,
-      SystemParameter const per) : Mtype(type), Mper(per)
+      SystemParameter& per) : Mtype(type), Mper(&per)
   { }
 
   /*=========================================================================*/
   FirstOrderSubsystem::FirstOrderSubsystem(EsubSystemType type,
-      SystemParameter const per) : Tbase(type, per)
+      SystemParameter& per) : Tbase(type, per)
   { 
      CALEX_assert(LP == Tbase::Mtype || HP == Tbase::Mtype, 
          "Illegal subsystem type."); 
@@ -79,20 +79,20 @@ namespace calex
   /*-------------------------------------------------------------------------*/
   void FirstOrderSubsystem::write(std::ostream& os) const
   {
-    os << Tbase::Mper;
+    os << *Tbase::Mper;
   }
 
   /*=========================================================================*/
   SecondOrderSubsystem::SecondOrderSubsystem(EsubSystemType type,
-      SystemParameter const per, SystemParameter const dmp) : Tbase(type, per),
-      Mdmp(dmp)
+      SystemParameter& per, SystemParameter& dmp) : Tbase(type, per),
+      Mdmp(&dmp)
   { }
 
   /*-------------------------------------------------------------------------*/
   void SecondOrderSubsystem::write(std::ostream& os) const
   {
-    os << Tbase::Mper;
-    os << Mdmp;
+    os << *Tbase::Mper;
+    os << *Mdmp;
   }
 
   /*-------------------------------------------------------------------------*/

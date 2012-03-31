@@ -38,7 +38,7 @@
 #ifdef STS2
   #define CALEX_ALIAS 1.00
   #define CALEX_M0 0
-  #define CALEX_MAXIT 1
+  #define CALEX_MAXIT 80
   #define CALEX_QAC 1e-5 
   #define CALEX_FINAC 1e-3 
   #define CALEX_NS1 0
@@ -54,7 +54,7 @@
 #elif STS1
   #define CALEX_ALIAS 1.00
   #define CALEX_M0 0
-  #define CALEX_MAXIT 1
+  #define CALEX_MAXIT 80
   #define CALEX_QAC 1e-5 
   #define CALEX_FINAC 1e-2 
   #define CALEX_NS1 0
@@ -66,11 +66,10 @@
   #define CALEX_SUB  0.
   #define CALEX_SUBUNC 0.
   #define CALEX_TIL 0.
-  #define CALEX_TILUNC 0.
 #elif GEOPHONE_10HZ
   #define CALEX_ALIAS 0.05
   #define CALEX_M0 0
-  #define CALEX_MAXIT 1
+  #define CALEX_MAXIT 80
   #define CALEX_QAC 1e-5 
   #define CALEX_FINAC 1e-3 
   #define CALEX_NS1 0
@@ -86,7 +85,8 @@
 // if no flag had been specified use STS-2 default parameters as defaults
 #else 
   #define CALEX_ALIAS 1.00
-  #define CALEX_MAXIT 1
+  #define CALEX_M0 0
+  #define CALEX_MAXIT 80
   #define CALEX_QAC 1e-5 
   #define CALEX_FINAC 1e-3 
   #define CALEX_NS1 0

@@ -49,13 +49,14 @@ int main(int iargc, char* argv[])
   paramfile.set_comment(
       "exemplary calex parameter file for a STS-2 seismometer");
 
+  calex::SystemParameter per_param("per", 120., 1.);
+  calex::SystemParameter dmp_param("dmp", 0.707, 0.01);
   // create a calex subsystem describing a STS-2 seismometer 
-  calex::CalexSubsystem* lp2 = new calex::SecondOrderSubsystem(calex::BP, 
-      calex::SystemParameter("per", 120., 1.),
-      calex::SystemParameter("dmp", 0.707, 0.01));
+  calex::CalexSubsystem* lp2 = new calex::SecondOrderSubsystem(calex::BP,
+      per_param, dmp_param);
 
   // add subsystem to parameter file configuration
-  paramfile.add_subsystem(lp2);
+  paramfile.add_subsystem(*lp2);
 
   // write parameter file configuration to 
   std::cout << paramfile << std::endl;

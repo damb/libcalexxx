@@ -33,7 +33,7 @@ CXXFLAGS=-Wall $(FLAGS)
 
 all:
 
-STANDARDTEST= calexParamTest calexResultTest  
+STANDARDTEST= calexParamTest calexResultTest commandlineParserTest 
 
 clean:
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v

@@ -34,6 +34,7 @@
  * ============================================================================
  */
  
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <calexxx/systemparameter.h>
@@ -41,27 +42,11 @@
 
 namespace calex
 {
-  
   /*-------------------------------------------------------------------------*/
-  SystemParameter::SystemParameter(std::string const nam, double const val,
-      double const unc) : Mnam(nam.substr(0,3)), Mval(val), Munc(unc),
-      Mknown(true)
+  SystemParameter::SystemParameter(std::string const nam,
+      double const val, double const unc) : Mnam(nam), Mval(val), Munc(unc)
   { 
-    CALEX_assert(Mnam.size() == 3, "Illegal length of name.");
-  }
-
-  /*-------------------------------------------------------------------------*/
-  SystemParameter::SystemParameter(std::string const nam, double const unc)
-      : Mnam(nam.substr(0,3)), Munc(unc), Mknown(false)
-  { 
-    CALEX_assert(Mnam.size() == 3, "Illegal length of name.");
-  }
-
-  /*-------------------------------------------------------------------------*/
-  double const& SystemParameter::get_val() const 
-  { 
-    CALEX_assert(Mknown, "Illegal to call for unknown system parameters");
-    return Mval; 
+    CALEX_assert(Mnam.size() == 3, "Illegal length of 'nam' identifier.");
   }
 
   /*-------------------------------------------------------------------------*/
@@ -79,6 +64,7 @@ namespace calex
       << "  " << std::setw(12) << std::right << std::fixed << Munc;
     os << ss.str() << std::endl;
   }
+
   /*-------------------------------------------------------------------------*/
 
 } // namespace calex

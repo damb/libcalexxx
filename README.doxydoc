@@ -47,9 +47,9 @@ V3 of the filesystem library so that setting the variable according
 \code
 BOOST_FILESYSTEM_VERSION=3
 \endcode
-in your \e ~/.bashrc file will do its job. Boost releases greater than 1.47 do
-not support anymore Version 2 of the filesystem library so that setting the
-variable won't effect the compilation process.\n
+in your \a ~/.bashrc file will do its job. Boost releases greater than 1.47 do
+not support anymore Version 2 of the filesystem library though setting the
+variable to \c 3 is highly recommended.\n
 In case there are minor releases than Boost version 1.44 in use just set this
 variable to
 \code
@@ -58,6 +58,11 @@ BOOST_FILESYSTEM_VERSION=2
 For further information read the <a
 href="http://www.boost.org/doc/libs/release/libs/filesystem/">Boost Filesystem
 library documentation.</a>
+
+\note While testing V3 of the Boost filesystem library in Boost release 1.44 
+filenames weren't read properly which means that always the first letter always
+had been cut off. As a consequence I recommend using V2 of the Boost filesystem
+library if working with Boost release 1.44.
 
 */
 
