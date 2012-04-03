@@ -138,7 +138,7 @@ clean: ;
 	-find . -name \*.d | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.h.strip | xargs --no-run-if-empty /bin/rm -v
 	-/bin/rm -vf flist *.o install-include *.xxx junk* *.a *.so
-	cd tests; $(MAKE) clean
+	-cd tests; $(MAKE) clean
 
 #======================================================================
 # library part
