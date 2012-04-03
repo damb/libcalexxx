@@ -164,7 +164,6 @@ namespace calex
  *
  * \ingroup group_error
  * \param M message of type char*
- * \param E exception class to throw
  */
 #define CALEX_abort(M) \
   throw( calex::Exception ( M , __FILE__, __LINE__ )) 
