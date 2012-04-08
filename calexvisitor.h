@@ -123,7 +123,7 @@ namespace calex
     ofs.close();
 
     // execute calex command
-    std::string calex_command("calex "+param_path.string()+" > /dev/null");
+    std::string calex_command("calex "+param_path.string()+" >/dev/null 2>&1");
     CALEX_assert(!system(calex_command.c_str()), 
         "Error while executing extern calex program.");
 
