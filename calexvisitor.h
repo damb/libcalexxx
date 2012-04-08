@@ -45,8 +45,8 @@
 #include <calexxx/error.h>
 #include <optimizexx/application.h>
 
-#ifndef _CALEXVISITOR_H_
-#define _CALEXVISITOR_H_
+#ifndef _CALEX_CALEXVISITOR_H_
+#define _CALEX_CALEXVISITOR_H_
 
 namespace opt = optimize;
 namespace fs = boost::filesystem;
@@ -123,7 +123,8 @@ namespace calex
     ofs.close();
 
     // execute calex command
-    std::string calex_command("calex "+param_path.string()+" >/dev/null 2>&1");
+    std::string calex_command("calex "+param_path.string());
+    // std::string calex_command("calex "+param_path.string()+" >/dev/null 2>&1");
     CALEX_assert(!system(calex_command.c_str()), 
         "Error while executing extern calex program.");
 
@@ -141,9 +142,9 @@ namespace calex
     ifs.close();
     
     // delete *.par and temporary calex files
-    CALEX_assert(fs::remove(param_path) && fs::remove(out_path) &&
-        fs::remove("synt") && fs::remove("einf") && fs::remove("ausf") && 
-        fs::remove("rest") && fs::remove("winplot.par"),
+    CALEX_assert(fs::remove(param_path) && fs::remove(out_path),
+    //    fs::remove("synt") && fs::remove("einf") && fs::remove("ausf") && 
+    //    fs::remove("rest") && fs::remove("winplot.par")),
         "Error while removing current calex files");
 
   } // function CalexApplication<Ctype>::operator()

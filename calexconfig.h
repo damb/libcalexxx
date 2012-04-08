@@ -47,8 +47,8 @@
 #include <optimizexx/globalalgorithm.h>
 #include <optimizexx/parameter.h>
 
-#ifndef _CALEXCONFIG_H_
-#define _CALEXCONFIG_H_
+#ifndef _CALEX_CALEXCONFIG_H_
+#define _CALEX_CALEXCONFIG_H_
 
 namespace opt = optimize;
 
