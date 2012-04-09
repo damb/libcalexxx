@@ -39,8 +39,8 @@
 #include <optimizexx/parameter.h>
 #include <calexxx/error.h>
 
-#ifndef _SYSTEMPARAMETER_H_
-#define _SYSTEMPARAMETER_H_
+#ifndef _CALEX_SYSTEMPARAMETER_H_
+#define _CALEX_SYSTEMPARAMETER_H_
 
 namespace opt = optimize;
 

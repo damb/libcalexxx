@@ -37,8 +37,8 @@
 #include <calexxx/systemparameter.h>
 #include <calexxx/error.h>
 
-#ifndef _SUBSYSTEM_H_
-#define _SUBSYSTEM_H_
+#ifndef _CALEX_SUBSYSTEM_H_
+#define _CALEX_SUBSYSTEM_H_
 
 namespace calex
 {

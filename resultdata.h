@@ -40,8 +40,8 @@
 #include <map>
 #include <string>
 
-#ifndef _RESULTDATA_H_
-#define _RESULTDATA_H_
+#ifndef _CALEX_RESULTDATA_H_
+#define _CALEX_RESULTDATA_H_
 
 namespace calex
 {

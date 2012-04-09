@@ -38,8 +38,8 @@
  * ============================================================================
  */
 
-#ifndef _CALEXERROR_H_
-#define _CALEXERROR_H_
+#ifndef _CALEX_ERROR_H_
+#define _CALEX_ERROR_H_
 
 #include <iostream>
 
@@ -199,6 +199,6 @@ namespace calex
 #define CALEX_nonfatal_assert(F,C,M,V) \
   if (F) { CALEX_report_assert(C,M,V) } else { CALEX_assert(C,M) }
 
-#endif // _ERROR_H_ (includeguard)
+#endif // include guard
 
 /* ----- END OF error.h ----- */

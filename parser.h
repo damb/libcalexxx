@@ -40,8 +40,8 @@
 #include <calexxx/systemparameter.h>
 #include <calexxx/subsystem.h>
 
-#ifndef _PARSER_H_
-#define _PARSER_H_
+#ifndef _CALEX_PARSER_H_
+#define _CALEX_PARSER_H_
 
 namespace opt = optimize;
  
