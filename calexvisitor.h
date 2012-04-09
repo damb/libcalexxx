@@ -31,15 +31,21 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 15/03/2012  V0.1  Daniel Armbruster
+ * 15/03/2012  V0.1     Daniel Armbruster
+ * 09/04/2012  V0.2     If V2 of the Boost filsystem is in use now construct
+ *                      calex parameter filepath with thread ID.
  * 
  * ============================================================================
  */
  
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <cstdlib>
 #include <boost/filesystem.hpp>
+#if BOOST_FILESYSTEM_VERSION == 2
+  #include <boost/thread.hpp>
+#endif
 #include <calexxx/calexconfig.h>
 #include <calexxx/resultdata.h>
 #include <calexxx/error.h>
@@ -70,6 +76,10 @@ namespace calex
    * \code
    * McalexConfig->update<Ctype>(node->getCoordinates());
    * \endcode
+   *
+   * \note If V2 of the Boost filesystem library in use the program using class
+   * template calex::CalexApplication must link against \c boost_thread cause
+   * calex parameter file names will be build containing the thread ID.
    */
   template <typename Ctype>
   class CalexApplication : 
@@ -113,7 +123,12 @@ namespace calex
 
     // write calex parameter file to disk
 #if BOOST_FILESYSTEM_VERSION == 2
-    fs::path param_path("calex.par");
+    // If V2 of the Boost filesystem library is in use construct calex parameter
+    // file name containing the thread ID.
+    std::ostringstream oss;
+    oss << "calex-" << boost::this_thread::get_id() << ".par";
+
+    fs::path param_path(oss.str());
     std::ofstream ofs(param_path.string().c_str());
 #else
     fs::path param_path(fs::unique_path("%%%%-%%%%-%%%%-%%%%.par"));
@@ -138,8 +153,12 @@ namespace calex
 #endif
     TresultType calex_result;
     ifs >> calex_result;
+
+    std::cout << "Result: " << calex_result << std::endl;
     node->setResultData(calex_result);
     ifs.close();
+
+    node->
     
     // delete *.par and temporary calex files
     CALEX_assert(fs::remove(param_path) && fs::remove(out_path),
