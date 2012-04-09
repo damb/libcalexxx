@@ -63,7 +63,7 @@ namespace calex
   typedef CalexResult TresultType;
 
   /*=========================================================================*/
-  /*
+  /*!
    * Calex liboptimizexx application.
    *
    * The application will generate a calex configuration file for every node.

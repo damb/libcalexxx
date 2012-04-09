@@ -57,7 +57,10 @@ BOOST_FILESYSTEM_VERSION=2
 \endcode
 For further information read the <a
 href="http://www.boost.org/doc/libs/release/libs/filesystem/">Boost Filesystem
-library documentation.</a>
+library documentation</a>. Regarding \a libcalexxx if V2 is in use additionally
+there must be a linked against <a
+href="http://www.boost.org/doc/libs/release/libs/thread/">Boost Thread library
+</a>.
 
 \note While testing V3 of the Boost filesystem library in Boost release 1.44 
 filenames weren't read properly which means that always the first letter always
