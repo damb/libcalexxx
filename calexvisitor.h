@@ -38,6 +38,7 @@
  * ============================================================================
  */
  
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -90,8 +91,10 @@ namespace calex
        * constructor
        *
        * \param config Calex parameter file configuration.
+       * \param verbose Be verbose.
        */
-      CalexApplication(CalexConfig* config) : McalexConfig(config)
+      CalexApplication(CalexConfig* config, bool verbose=false) :
+        McalexConfig(config), Mverbose(verbose)
       { }
       //! Visit function for a liboptimizexx grid.
       /*!
@@ -112,6 +115,8 @@ namespace calex
     private:
       //! calex parameter file configuration
       CalexConfig* McalexConfig;
+      //! be verbose
+      bool Mverbose;
 
   }; // class template CalexApplication
 
@@ -153,8 +158,8 @@ namespace calex
 #endif
     TresultType calex_result;
     ifs >> calex_result;
-
-    std::cout << "Result: " << calex_result << std::endl;
+    
+    if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
     node->setResultData(calex_result);
     ifs.close();
 

@@ -49,6 +49,8 @@ namespace calex
    * Datatype to store the result data after calculating the residuals with
    * Erhard Wielandt's calex program.
    *
+   * \todo \c sub and \c til parameters were not printed yet.
+   *
    */
   class CalexResult
   {
