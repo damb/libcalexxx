@@ -296,8 +296,9 @@ namespace calex
       opt::GlobalAlgorithm<Ctype, CalexResult>& algo)
   {
     std::vector<GridSystemParameter*> grid_params;
-    std::cout << "grid_params.size(): " << grid_params.size() << std::endl;
     get_gridSystemParameters(grid_params);
+    CALEX_assert(grid_params.size() != 0,
+       "No grid system parameters assigned.");
     for (std::vector<GridSystemParameter*>::iterator it(
           grid_params.begin()); it != grid_params.end(); ++it)
     {

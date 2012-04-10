@@ -90,7 +90,7 @@ namespace calex
         {
           iss.str(str);
         }
-        iss >> start >> c >> end >> c >> delta >> c >> unc;
+        iss >> std::fixed >> start >> c >> end >> c >> delta >> c >> unc;
         *sysparam = new GridSystemParameter(id, unc, id, start, end, delta);
       } else
       {
