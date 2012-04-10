@@ -33,11 +33,37 @@ $Id$
 
   Contents of this page:
   - \ref sec_concept
+  - \ref sec_dependencies
   - \ref sec_libboost_issues
 
 
 \section sec_concept Concept of the library
-\a libcalexxx is a 
+\a libcalexxx is a small library acctually acting as a wrapper for <em>Erhard
+Wielandt's</em> 
+<a href="http://www.software-for-seismometry.de/software/calex/">calex</a>
+seimometer simulation program making use of impulse response invariant filters.
+For that reason the library provides a class to generate \a calex parameter
+files and to read relevant data from \a calex \c out files.\n
+Additionally this library implements the possibility that simple system
+parameters both work as calex::SystemParameter one one hand and on the other
+hand can be passed as a grid system parameter
+(optimize::StandardSystemParameter) to the global algorithm of \a
+liboptimizexx. Besides this library declares the class template
+calex::CalexApplication which implements a concrete parameter space visitor.
+Parameter space visitors actually serve as applications (forward algorithms) for
+a global algorithm of \a liboptimizexx. Global algorithms will administer
+calex::CalexApplication and will send it through the \a liboptimizexx parameter
+space grid regarding their own rules.\n
+
+\section sec_dependencies Library dependencies
+As mentioned above \a libcalexxx depends heavily on \a liboptimizexx.
+Furthermore while building the library the following
+<a href="http://www.boost.org/">Boost C++ libraries</a> must be provided:
+ - <a href="http://www.boost.org/doc/libs/release/libs/filesystem/"> Boost
+   filesystem</a>
+ - <a href="http://www.boost.org/doc/libs/release/libs/thread/">Boost
+   thread</a>.\n
+   Notice that \a liboptimizexx depends on boost's thread library, too.
 
 \section sec_libboost_issues Boost dependency issues
 To install the library there must be taken care to set the environment variable
