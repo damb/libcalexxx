@@ -145,8 +145,7 @@ namespace calex
     // execute calex command
     //std::string calex_command("calex "+param_path.string());
     std::string calex_command("calex "+param_path.string()+" >/dev/null 2>&1");
-    CALEX_assert(!system(calex_command.c_str()), 
-        "Error while executing extern calex program.");
+    system(calex_command.c_str());
 
     // read calex result data of file *.out
 #if BOOST_FILESYSTEM_VERSION == 2
@@ -157,13 +156,16 @@ namespace calex
     std::ifstream ifs(out_path.c_str());
 #endif
     TresultType calex_result;
-    ifs >> calex_result;
-    
-    if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
-    node->setResultData(calex_result);
-    ifs.close();
+    if (ifs)
+    {
+      ifs >> calex_result;
+      
+      if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
+      node->setResultData(calex_result);
+      ifs.close();
 
-    node->setComputed();
+      node->setComputed();
+    }
     // delete *.par and temporary calex files
     CALEX_assert(fs::remove(param_path) && fs::remove(out_path),
         "Error while removing current calex files");
