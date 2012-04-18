@@ -108,7 +108,7 @@ endif
 FLAGS= -D$(CALEXCONFIG) 
 FLAGS+= -DBOOST_FILESYSTEM_VERSION=$(BOOST_FILESYSTEM_VERSION)
 FLAGS+=$(MYFLAGS) -fPIC -march=native -O2 -fno-reorder-blocks \
-			 -fno-reorder-functions -pipe
+			 -fno-reorder-functions -pipe -std=c++0x
 CXXFLAGS+=-Wall $(FLAGS)
 LDFLAGS=$(addprefix -L,$(LOCLIBDIR))
 CPPFLAGS=$(addprefix -I,$(LOCINCLUDEDIR)) $(FLAGS)
