@@ -29,11 +29,13 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 15/03/2012  V0.1  Daniel Armbruster
+ * 15/03/2012   V0.1  Daniel Armbruster
+ * 25/04/2012   V0.2  Make use of smart poiters and C++0x.
  * 
  * ============================================================================
  */
  
+#include <memory>
 #include <calexxx/systemparameter.h>
 #include <calexxx/error.h>
 
@@ -67,13 +69,13 @@ namespace calex
   {
     public:
       //! destructor
-      virtual ~CalexSubsystem() { delete Mper; }
+      virtual ~CalexSubsystem() { }
       //! query function for system type
       EsubSystemType get_type() const { return Mtype; }
       //! query function for period uncertainty
-      virtual SystemParameter& get_per() { return *Mper; }
+      virtual std::shared_ptr<SystemParameter> get_per() { return Mper; }
       //! query function for damping uncertainty
-      virtual SystemParameter& get_dmp() 
+      virtual std::shared_ptr<SystemParameter> get_dmp() 
       { CALEX_abort("Illegal function call."); }
       //! query function of order of subsystem
       virtual unsigned int get_order() const = 0;
@@ -88,7 +90,7 @@ namespace calex
 
     protected:
       //! constructor
-      CalexSubsystem(EsubSystemType type, SystemParameter& per);
+      CalexSubsystem(EsubSystemType type, std::shared_ptr<SystemParameter> per);
 
       /*!
        * write to output stream
@@ -104,7 +106,7 @@ namespace calex
       // subsystem type
       EsubSystemType Mtype;
       //! period system parameter
-      SystemParameter* Mper;
+      std::shared_ptr<SystemParameter> Mper;
 
   }; // class CalexFilter
 
@@ -119,7 +121,8 @@ namespace calex
        * EsubSystemType::HP.
        * \param period system parameter
        */
-      FirstOrderSubsystem(EsubSystemType type, SystemParameter& per);
+      FirstOrderSubsystem(EsubSystemType type,
+          std::shared_ptr<SystemParameter> per);
       //! destructor
       virtual ~FirstOrderSubsystem() { }
       //! query function of order of subsystem
@@ -144,14 +147,15 @@ namespace calex
   {
     public:
       //! constructor
-      SecondOrderSubsystem(EsubSystemType type, SystemParameter& per,
-          SystemParameter& dmp);
+      SecondOrderSubsystem(EsubSystemType type,
+          std::shared_ptr<SystemParameter> per,
+          std::shared_ptr<SystemParameter> dmp);
       //! destructor
-      virtual ~SecondOrderSubsystem() { delete Mdmp; }
+      virtual ~SecondOrderSubsystem() { }
       //! query function of order of subsystem
       virtual unsigned int get_order() const { return 2; }
       //! query function for damping system parameter
-      virtual SystemParameter& get_dmp() { return *Mdmp; }
+      virtual std::shared_ptr<SystemParameter> get_dmp() { return Mdmp; }
 
     protected:
       /*!
@@ -165,7 +169,7 @@ namespace calex
     private:
       typedef CalexSubsystem Tbase;
       //! system parameter damping
-      SystemParameter* Mdmp;
+      std::shared_ptr<SystemParameter> Mdmp;
 
   }; // class SecondOrderFilter
 

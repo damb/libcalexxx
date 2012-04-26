@@ -31,7 +31,8 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 27/03/2012  V0.1  Daniel Armbruster
+ * 27/03/2012   V0.1  Daniel Armbruster
+ * 25/04/2012   V0.2  Make use of smart poiters and C++0x.
  * 
  * ============================================================================
  */
@@ -39,6 +40,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 #include <calexxx/parser.h>
 #include <calexxx/error.h>
 
@@ -66,8 +68,8 @@ namespace calex
     } // namespace (unnamed)
 
     /* --------------------------------------------------------------------- */
-    void systemParameterParser(std::string const& str,
-        SystemParameter** sysparam, std::string const nam)
+    std::shared_ptr<SystemParameter> systemParameterParser(
+        std::string const& str, std::string const nam)
     {
       if (nam.size() != 0)
       {
@@ -79,6 +81,7 @@ namespace calex
       std::istringstream iss;
       // detect if system parameter will be treated additionally as a grid
       // system parameter
+      std::shared_ptr<SystemParameter> ret_ptr;
       if (std::string::npos != str.find(";"))
       {
         // check if obligatory system parameter
@@ -91,7 +94,7 @@ namespace calex
           iss.str(str);
         }
         iss >> std::fixed >> start >> c >> end >> c >> delta >> c >> unc;
-        *sysparam = new GridSystemParameter(id, unc, id, start, end, delta);
+        ret_ptr.reset(new GridSystemParameter(id, unc, id, start, end, delta));
       } else
       {
         // check if obligatory system parameter
@@ -104,49 +107,58 @@ namespace calex
           iss.str(str);
         }
         iss >> val >> c >> unc;
-        *sysparam = new SystemParameter(id, val, unc);
+        ret_ptr.reset(new SystemParameter(id, val, unc));
       }
+      return ret_ptr;
     } // function systemParameterParser
 
     /* --------------------------------------------------------------------- */
-    void firstOrderParser(std::string const& str, CalexSubsystem** subsys)
+    std::shared_ptr<CalexSubsystem> firstOrderParser(std::string const& str)
     {
       std::string type(str.substr(0,2));
-      SystemParameter* per_ptr = 0;
-      systemParameterParser(str.substr(3), &per_ptr, "per");
+      std::shared_ptr<SystemParameter> per_ptr(
+          systemParameterParser(str.substr(3), "per"));
+
+      std::shared_ptr<CalexSubsystem> ret_ptr;
       if ("LP" == type)
       {
-        *subsys = new FirstOrderSubsystem(LP, *per_ptr);
+         ret_ptr.reset(new FirstOrderSubsystem(LP, per_ptr));
       } else
       if ("HP" == type)
       {
-        *subsys = new FirstOrderSubsystem(HP, *per_ptr);
+         ret_ptr.reset(new FirstOrderSubsystem(HP, per_ptr));
       } else { CALEX_abort("Illegal subsystem type."); }
+
+      return ret_ptr;
     } // function firstOrderParser
 
     /* --------------------------------------------------------------------- */
-    void secondOrderParser(std::string const& str, CalexSubsystem** subsys)
+    std::shared_ptr<CalexSubsystem> secondOrderParser(std::string const& str)
     {
       std::string type(str.substr(0,2));
       std::string param_str(str.substr(str.find("|")+1,
             findSecondSeparatorPosition(str)-1));
-      SystemParameter* per_ptr = 0;
-      systemParameterParser(param_str, &per_ptr, "per");
+      std::shared_ptr<SystemParameter> per_ptr(
+          systemParameterParser(str.substr(3), "per"));
       param_str = str.substr(type.size()+1+param_str.size()+1);
-      SystemParameter* dmp_ptr = 0;
-      systemParameterParser(param_str, &dmp_ptr, "dmp");
+      std::shared_ptr<SystemParameter> dmp_ptr(
+          systemParameterParser(str.substr(3), "dmp"));
+
+      std::shared_ptr<CalexSubsystem> ret_ptr;
       if ("LP" == type)
       {
-        *subsys = new SecondOrderSubsystem(LP, *per_ptr, *dmp_ptr);
+        ret_ptr.reset(new SecondOrderSubsystem(LP, per_ptr, dmp_ptr));
       } else
       if ("HP" == type)
       {
-        *subsys = new SecondOrderSubsystem(HP, *per_ptr, *dmp_ptr);
+        ret_ptr.reset(new SecondOrderSubsystem(HP, per_ptr, dmp_ptr));
       } else
       if ("BP" == type)
       {
-        *subsys = new SecondOrderSubsystem(BP, *per_ptr, *dmp_ptr);
+        ret_ptr.reset(new SecondOrderSubsystem(BP, per_ptr, dmp_ptr));
       } else { CALEX_abort("Illegal subsystem type."); }
+
+      return ret_ptr;
     } // function secondOrderParser
 
     /* --------------------------------------------------------------------- */

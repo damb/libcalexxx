@@ -31,12 +31,14 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 27/03/2012  V0.1  Daniel Armbruster
+ * 27/03/2012   V0.1  Daniel Armbruster
+ * 25/04/2012   V0.2  Make use of smart poiters and C++0x.
  * 
  * ============================================================================
  */
 
 #include <string>
+#include <memory>
 #include <calexxx/systemparameter.h>
 #include <calexxx/subsystem.h>
 
@@ -74,9 +76,11 @@ namespace calex
      * calex parameter file (represented by class calex::CalexConfig).
      *
      * \ingroup group_parser
+     *
+     * \return shared pointer to a system parameter
      */
-    void systemParameterParser(std::string const& str,
-        SystemParameter** sysparam, std::string const nam="");
+    std::shared_ptr<SystemParameter> systemParameterParser(
+        std::string const& str, std::string const nam="");
 
     /* --------------------------------------------------------------------- */
     /*!
@@ -88,8 +92,10 @@ namespace calex
      * result will be assigned to this pointer.
      *
      * \ingroup group_parser
+     *
+     * \return shared pointer to a first order subsystem
      */
-    void firstOrderParser(std::string const& str, CalexSubsystem** subsys);
+    std::shared_ptr<CalexSubsystem> firstOrderParser(std::string const& str);
 
     /* --------------------------------------------------------------------- */
     /*!
@@ -101,8 +107,10 @@ namespace calex
      * result will be assigned to this pointer.
      *
      * \ingroup group_parser
+     *
+     * \return shared pointer to a second order subsystem
      */
-    void secondOrderParser(std::string const& str, CalexSubsystem** subsys);
+    std::shared_ptr<CalexSubsystem> secondOrderParser(std::string const& str);
 
     /* --------------------------------------------------------------------- */
 

@@ -30,11 +30,13 @@
  * 
  * REVISIONS and CHANGES 
  * 20/03/2012  V0.1  Daniel Armbruster
+ * 26/04/2012  V0.2  Make use of C++0x smart pointers.
  * 
  * ============================================================================
  */
  
 #include <iostream>
+#include <memory>
 #include <calexxx/calexconfig.h>
 #include <calexxx/subsystem.h>
 #include <calexxx/systemparameter.h>
@@ -48,20 +50,32 @@ int main(int iargc, char* argv[])
   // add comment to parameter file configuration
   paramfile.set_comment(
       "exemplary calex parameter file for a STS-2 seismometer");
+  // add obligatory system parameters
+  std::shared_ptr<calex::SystemParameter> amp_param(
+      new calex::SystemParameter("amp",-41.5,5.1));
+  std::shared_ptr<calex::SystemParameter> del_param(
+      new calex::SystemParameter("del",0.01,0.001));
+  std::shared_ptr<calex::SystemParameter> sub_param(
+      new calex::SystemParameter("sub",0.,0.));
+  std::shared_ptr<calex::SystemParameter> til_param(
+      new calex::SystemParameter("sub",0.,0.));
+  paramfile.set_amp(amp_param);
+  paramfile.set_del(del_param);
+  paramfile.set_sub(sub_param);
+  paramfile.set_til(til_param);
 
-  calex::SystemParameter per_param("per", 120., 1.);
-  calex::SystemParameter dmp_param("dmp", 0.707, 0.01);
+  std::shared_ptr<calex::SystemParameter> per_param(
+      new calex::SystemParameter("per", 120., 1.));
+  std::shared_ptr<calex::SystemParameter> dmp_param(
+      new calex::SystemParameter ("dmp", 0.707, 0.01));
   // create a calex subsystem describing a STS-2 seismometer 
-  calex::CalexSubsystem* lp2 = new calex::SecondOrderSubsystem(calex::BP,
-      per_param, dmp_param);
+  std::shared_ptr<calex::CalexSubsystem> lp2(
+      new calex::SecondOrderSubsystem(calex::BP, per_param, dmp_param));
 
   // add subsystem to parameter file configuration
-  paramfile.add_subsystem(*lp2);
-
+  paramfile.add_subsystem(lp2);
   // write parameter file configuration to 
   std::cout << paramfile << std::endl;
-
-  delete lp2;
 
   return 0;
 } // function main

@@ -48,110 +48,94 @@ namespace calex
       : Mcomment(""), Minfile(infile), Moutfile(outfile), Malias(CALEX_ALIAS),
       Mm(0), Mm0(CALEX_M0), Mm1(0), Mm2(0), Mmaxit(CALEX_MAXIT),
       Mqac(CALEX_QAC), Mfinac(CALEX_FINAC), Mns1(CALEX_NS1), Mns2(CALEX_NS2),
-      Mamp(0), Mdel(0), Msub(0), Mtil(0), MisSynchronized(false)
+      Mamp(new SystemParameter("amp",0.,0.)),
+      Mdel(new SystemParameter("del",0.,0.)), 
+      Msub(new SystemParameter("sub",0.,0.)),
+      Mtil(new SystemParameter("til",0.,0.)), 
+      MisSynchronized(false)
   { }
 
   /*-------------------------------------------------------------------------*/
-  CalexConfig::~CalexConfig()
+  void CalexConfig::set_amp(std::shared_ptr<SystemParameter> amp)
   {
-    delete Mamp;
-    delete Mdel;
-    delete Msub;
-    delete Mtil;
-    for (std::vector<SystemParameter*>::iterator it(MsystemParameters.begin());
-        it != MsystemParameters.end(); ++it)
-    {
-      delete *it;
-    }
-    MsystemParameters.clear();
-    for (std::vector<CalexSubsystem*>::iterator it(MsubSystems.begin());
-        it != MsubSystems.end(); ++it)
-    {
-      delete *it;
-    }
-    MsubSystems.clear();
+    if ((! Mamp || !Mamp->is_active()) && amp->is_active()) { ++Mm; }
+    Mamp = amp; 
   }
 
   /*-------------------------------------------------------------------------*/
-  void CalexConfig::set_amp(SystemParameter& amp)
+  void CalexConfig::set_del(std::shared_ptr<SystemParameter> del)
   {
-    if ((0 == Mamp || !Mamp->is_active()) && amp.is_active()) { ++Mm; }
-    Mamp = &amp; 
-  }
-
-  /*-------------------------------------------------------------------------*/
-  void CalexConfig::set_del(SystemParameter& del)
-  {
-    if (0 != Msub)
+    if (Msub)
     {
       CALEX_assert((0 == Msub->get_val() && 0 == Msub->get_unc()) ||
-          (0 == del.get_val() && 0 == del.get_unc()), "Assignment not valid.");
+          (0 == del->get_val() && 0 == del->get_unc()),
+          "Assignment not valid.");
     }
-    if ((0 == Mdel || !Mdel->is_active()) && del.is_active()) { ++Mm; }
-    Mdel = &del; 
+    if ((! Mdel || !Mdel->is_active()) && del->is_active()) { ++Mm; }
+    Mdel = del; 
   }
 
   /*-------------------------------------------------------------------------*/
-  void CalexConfig::set_sub(SystemParameter& sub)
+  void CalexConfig::set_sub(std::shared_ptr<SystemParameter> sub)
   {
-    if (0 != Mdel)
+    if (Mdel)
     {
       CALEX_assert((0 == Mdel->get_val() && 0 == Mdel->get_unc()) ||
-          (0 == sub.get_val() && 0 == sub.get_unc()), "Assignment not valid.");
+          (0 == sub->get_val() && 0 == sub->get_unc()),
+          "Assignment not valid.");
     }
-    if ((0 == Msub || !Msub->is_active()) && sub.is_active()) { ++Mm; }
-    Msub = &sub; 
+    if ((! Msub || !Msub->is_active()) && sub->is_active()) { ++Mm; }
+    Msub = sub; 
   }
 
   /*-------------------------------------------------------------------------*/
-  void CalexConfig::set_til(SystemParameter& til)
+  void CalexConfig::set_til(std::shared_ptr<SystemParameter> til)
   {
-    if ((0 == Mtil || !Mtil->is_active()) && til.is_active()) { ++Mm; }
-    Mtil = &til;
+    if ((! Mtil || !Mtil->is_active()) && til->is_active()) { ++Mm; }
+    Mtil = til;
   }
 
   /*-------------------------------------------------------------------------*/
-  void CalexConfig::add_systemParameter(SystemParameter& param)
+  void CalexConfig::add_systemParameter(std::shared_ptr<SystemParameter> param)
   {
     std::string nam[] = {"amp", "del", "sub", "til"};
     std::vector<std::string> names(nam, nam+sizeof(nam)/sizeof(std::string));
     std::vector<std::string>::iterator it(
-        find(names.begin(), names.end(), param.get_nam()));
+        find(names.begin(), names.end(), param->get_nam()));
     CALEX_assert(names.end() != it, "Illegal parameter added.");
-    MsystemParameters.push_back(&param);
+    MsystemParameters.push_back(param);
   }
 
   /*-------------------------------------------------------------------------*/
-  void CalexConfig::add_subsystem(CalexSubsystem& subsys)
+  void CalexConfig::add_subsystem(std::shared_ptr<CalexSubsystem> subsys)
   { 
-    if (0 != subsys.get_per().get_unc()) { ++Mm; }
-    if (subsys.get_per().is_gridSystemParameter())
+    if (0 != subsys->get_per()->get_unc()) { ++Mm; }
+    if (subsys->get_per()->is_gridSystemParameter())
     { MisSynchronized = false; }
-    if (1 == subsys.get_order()) { ++Mm1; } else
-    if (2 == subsys.get_order())
+    if (1 == subsys->get_order()) { ++Mm1; } else
+    if (2 == subsys->get_order())
     { 
       ++Mm2;
-      if (0 != subsys.get_dmp().get_unc()) { ++Mm; }
-      if (subsys.get_dmp().is_gridSystemParameter())
+      if (0 != subsys->get_dmp()->get_unc()) { ++Mm; }
+      if (subsys->get_dmp()->is_gridSystemParameter())
       { MisSynchronized = false; }
     }
     else { CALEX_abort("Illegal subsystem type."); }
 
-    MsubSystems.push_back(&subsys);
+    MsubSystems.push_back(subsys);
   } // function CalexConfig::add_subsystem
 
   /*-------------------------------------------------------------------------*/
   void CalexConfig::clear_subsystems()
   {
-    for (std::vector<CalexSubsystem*>::iterator it(MsubSystems.begin());
-          it != MsubSystems.end(); ++it)
+    for (auto it(MsubSystems.begin()); it != MsubSystems.end(); ++it)
     {
-      if (0 != (*it)->get_per().get_unc()) { --Mm; }
-      if ((*it)->get_per().is_gridSystemParameter()) 
+      if (0 != (*it)->get_per()->get_unc()) { --Mm; }
+      if ((*it)->get_per()->is_gridSystemParameter()) 
       { MisSynchronized = false; }
-      if (2 == (*it)->get_order() && 0 != (*it)->get_dmp().get_unc())  
+      if (2 == (*it)->get_order() && 0 != (*it)->get_dmp()->get_unc())  
       { 
-        if ((*it)->get_dmp().is_gridSystemParameter()) 
+        if ((*it)->get_dmp()->is_gridSystemParameter()) 
         { 
           MisSynchronized = false;
         }
@@ -167,19 +151,18 @@ namespace calex
   } // function CalexConfig::clear_subsystems
 
   /*-------------------------------------------------------------------------*/
-  void CalexConfig::remove_subsystem(CalexSubsystem* subsys)
+  void CalexConfig::remove_subsystem(std::shared_ptr<CalexSubsystem> subsys)
   {
-    std::vector<CalexSubsystem*>::iterator it(
-        find(MsubSystems.begin(), MsubSystems.end(), subsys));
+    auto it(find(MsubSystems.begin(), MsubSystems.end(), subsys));
     if (it != MsubSystems.end())
     {
-      if (0 != (*it)->get_per().get_unc()) { --Mm; }
-      if (subsys->get_per().is_gridSystemParameter())
+      if (0 != (*it)->get_per()->get_unc()) { --Mm; }
+      if (subsys->get_per()->is_gridSystemParameter())
       { MisSynchronized = false; }
       if (2 == (*it)->get_order())
       {
-        if (0 != (*it)->get_dmp().get_unc()) { --Mm; }
-        if (subsys->get_per().is_gridSystemParameter())
+        if (0 != (*it)->get_dmp()->get_unc()) { --Mm; }
+        if (subsys->get_per()->is_gridSystemParameter())
         { 
           MisSynchronized = false;
         }
@@ -191,7 +174,8 @@ namespace calex
   } // function CalexConfig::remove_subsystem
 
   /*-------------------------------------------------------------------------*/
-  std::vector<CalexSubsystem*> const& CalexConfig::get_subsystems() const
+  std::vector<std::shared_ptr<CalexSubsystem>> const&
+    CalexConfig::get_subsystems() const
   {
     return MsubSystems;
   }
@@ -226,21 +210,19 @@ namespace calex
       << std::setw(6) << std::left << Mns2 << "ns2" << std::endl;
     os << ss.str() << std::endl;
     os << *Mamp << *Mdel << *Msub << *Mtil << std::endl;
-    for (std::vector<SystemParameter*>::const_iterator cit(
-          MsystemParameters.begin()); cit != MsystemParameters.end(); ++cit)
+    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
+        ++cit)
     {
       os << **cit;
     }
     std::cout << std::endl;
     // write first order subsystems
-    for (std::vector<CalexSubsystem*>::const_iterator cit(MsubSystems.begin());
-        cit != MsubSystems.end(); ++cit)
+    for (auto cit(MsubSystems.begin()); cit != MsubSystems.end(); ++cit)
     {
       if (1 == (*cit)->get_order()) { os << **cit << std::endl; }
     }
     // write second order subsystems
-    for (std::vector<CalexSubsystem*>::const_iterator cit(MsubSystems.begin());
-        cit != MsubSystems.end(); ++cit)
+    for (auto cit(MsubSystems.begin()); cit != MsubSystems.end(); ++cit)
     {
       if (2 == (*cit)->get_order()) { os << **cit << std::endl; }
     }
@@ -249,48 +231,50 @@ namespace calex
 
   /*-------------------------------------------------------------------------*/
   void CalexConfig::get_gridSystemParameters(
-      std::vector<GridSystemParameter*>& param_vec)
+      std::vector<std::shared_ptr<GridSystemParameter>>& param_vec)
   {
-    CALEX_assert(0 != Mamp && 0 != Mdel && 0 != Msub && 0 != Mtil,
+    CALEX_assert(Mamp && Mdel && Msub && Mtil,
         "System parameters not assigned.");
     if (Mamp->is_gridSystemParameter())
     {
-      param_vec.push_back(dynamic_cast<GridSystemParameter*>(Mamp));
+      param_vec.push_back(std::dynamic_pointer_cast<GridSystemParameter>(Mamp));
     }
     if (Mdel->is_gridSystemParameter())
     {
-      param_vec.push_back(dynamic_cast<GridSystemParameter*>(Mdel));
+      param_vec.push_back(std::dynamic_pointer_cast<GridSystemParameter>(Mdel));
     }
     if (Msub->is_gridSystemParameter())
     {
-      param_vec.push_back(dynamic_cast<GridSystemParameter*>(Msub));
+      param_vec.push_back(std::dynamic_pointer_cast<GridSystemParameter>(Msub));
     }
     if (Mtil->is_gridSystemParameter())
     {
-      param_vec.push_back(dynamic_cast<GridSystemParameter*>(Mtil));
+      param_vec.push_back(std::dynamic_pointer_cast<GridSystemParameter>(Mtil));
     }
-    for (std::vector<SystemParameter*>::iterator it(
-          MsystemParameters.begin()); it != MsystemParameters.end(); ++it)
+    for (auto it(MsystemParameters.begin()); it != MsystemParameters.end();
+        ++it)
     {
       if ((*it)->is_gridSystemParameter())
       {
-        param_vec.push_back(dynamic_cast<GridSystemParameter*>(*it));
+        param_vec.push_back(
+            std::dynamic_pointer_cast<GridSystemParameter>(*it));
       }
     }
-    for (std::vector<CalexSubsystem*>::iterator it(MsubSystems.begin());
-        it != MsubSystems.end(); ++it)
+    for (auto it(MsubSystems.begin()); it != MsubSystems.end(); ++it)
     {
-      if ((*it)->get_per().is_gridSystemParameter())
+      if ((*it)->get_per()->is_gridSystemParameter())
       {
-        param_vec.push_back(dynamic_cast<GridSystemParameter*>(
-              &(*it)->get_per()));
+        // ATTENTION -> get_per should return a shared pointer
+        param_vec.push_back(
+            std::dynamic_pointer_cast<GridSystemParameter>((*it)->get_per()));
       }
       if (2 == (*it)->get_order())
       {
-        if ((*it)->get_dmp().is_gridSystemParameter())
+        if ((*it)->get_dmp()->is_gridSystemParameter())
         {
-          param_vec.push_back(dynamic_cast<GridSystemParameter*>(
-                &(*it)->get_dmp()));
+        // ATTENTION -> get_dmp should return a shared pointer
+        param_vec.push_back(
+            std::dynamic_pointer_cast<GridSystemParameter>((*it)->get_dmp()));
         }
       }
     }
@@ -299,7 +283,7 @@ namespace calex
   /*-------------------------------------------------------------------------*/
   bool CalexConfig::hasGridSystemParameters()
   {
-    std::vector<GridSystemParameter*> grid_params; 
+    std::vector<std::shared_ptr<GridSystemParameter>> grid_params; 
     get_gridSystemParameters(grid_params);
     return 0 != grid_params.size();
   } // function CalexConfig::hasGridSystemParameters

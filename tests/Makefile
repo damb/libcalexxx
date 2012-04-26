@@ -42,10 +42,10 @@ clean:
 # ----------------------------------------------------------------------------
 
 $(addsuffix .o,$(STANDARDTEST)): %.o: %.cc
-	@$(CXX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS) $(FLAGS)
+	@$(CXX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS) $(FLAGS) -std=c++0x
 
 $(STANDARDTEST): %: %.o 	
 	@echo -e "\n[ Compiling test program: $@ ]\n"	
-	@$(CXX) -o $@ $< $(LDFLAGS) -lcalexxx
+	@$(CXX) -o $@ $< $(LDFLAGS) -lcalexxx -std=c++0x
 
 # ----- END OF Makefile -----

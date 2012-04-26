@@ -29,12 +29,14 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 15/03/2012  V0.1  Daniel Armbruster
+ * 15/03/2012   V0.1  Daniel Armbruster
+ * 25/04/2012   V0.2  Make use of smart poiters and C++0x.
  * 
  * ============================================================================
  */
  
 #include <iomanip>
+#include <memory>
 #include <calexxx/subsystem.h>
 #include <calexxx/error.h>
 
@@ -65,12 +67,12 @@ namespace calex
 
   /*-------------------------------------------------------------------------*/
   CalexSubsystem::CalexSubsystem(EsubSystemType type,
-      SystemParameter& per) : Mtype(type), Mper(&per)
+      std::shared_ptr<SystemParameter> per) : Mtype(type), Mper(per)
   { }
 
   /*=========================================================================*/
   FirstOrderSubsystem::FirstOrderSubsystem(EsubSystemType type,
-      SystemParameter& per) : Tbase(type, per)
+      std::shared_ptr<SystemParameter> per) : Tbase(type, per)
   { 
      CALEX_assert(LP == Tbase::Mtype || HP == Tbase::Mtype, 
          "Illegal subsystem type."); 
@@ -84,8 +86,8 @@ namespace calex
 
   /*=========================================================================*/
   SecondOrderSubsystem::SecondOrderSubsystem(EsubSystemType type,
-      SystemParameter& per, SystemParameter& dmp) : Tbase(type, per),
-      Mdmp(&dmp)
+      std::shared_ptr<SystemParameter> per,
+      std::shared_ptr<SystemParameter> dmp) : Tbase(type, per), Mdmp(dmp)
   { }
 
   /*-------------------------------------------------------------------------*/

@@ -29,7 +29,9 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 31/03/2012  V0.1  Daniel Armbruster
+ * 31/03/2012  V0.1   Daniel Armbruster
+ * 26/04/2012  V0.2   Make use of C++0x smart pointers.and apply adjustments
+ *                    due to libcalexxx interface changes.
  * 
  * ============================================================================
  */
@@ -51,50 +53,38 @@ int main(int iargc, char* argv[])
   std::string amp_str_dyn("-41.5;10;0.5|5.1");
   std::string sys_str("sys|30.14|5.1");
   std::string sys_str_dyn("sys|30.14;15.3;0.2|5.1");
-  calex::SystemParameter* sys_param=0;
 
-  calex::parser::systemParameterParser(amp_str, &sys_param, "amp");
-  std::cout << *sys_param;
-  delete sys_param;
-  calex::parser::systemParameterParser(amp_str_dyn, &sys_param, "amp");
-  std::cout << *sys_param;
-  delete sys_param;
-  calex::parser::systemParameterParser(sys_str, &sys_param);
-  std::cout << *sys_param;
-  delete sys_param;
-  calex::parser::systemParameterParser(sys_str_dyn, &sys_param);
-  std::cout << *sys_param;
-  delete sys_param;
+  std::cout << *calex::parser::systemParameterParser(amp_str, "amp")
+    << std::endl;
+  std::cout << *calex::parser::systemParameterParser(amp_str_dyn, "amp")
+    << std::endl;
+  std::cout << *calex::parser::systemParameterParser(sys_str)
+    << std::endl;
+  std::cout << *calex::parser::systemParameterParser(sys_str_dyn)
+    << std::endl;
 
   // first order subsystem parser tests
-  calex::CalexSubsystem* subsys=0;
   std::string first_order("LP|50|2");
   std::string first_order_dyn("LP|30;60;2|2");
 
-  calex::parser::firstOrderParser(first_order, &subsys);
-  std::cout << *subsys;
-  delete subsys;
-  calex::parser::firstOrderParser(first_order_dyn, &subsys);
-  std::cout << *subsys;
-  delete subsys;
+  std::cout << *calex::parser::firstOrderParser(first_order)
+    << std::endl;
+  std::cout << *calex::parser::firstOrderParser(first_order_dyn)
+    << std::endl;
 
   // second order subsystem parser test
   std::string second_order("BP|50|2|30|1");
   std::string second_order_dyn1("BP|30;60;2|2|30|1");
   std::string second_order_dyn2("BP|30|1|30;60;2|2");
   std::string second_order_dyndyn("BP|115;125;0.1|1|30;60;2|2");
-  calex::parser::secondOrderParser(second_order, &subsys);
-  std::cout << *subsys;
-  delete subsys;
-  calex::parser::secondOrderParser(second_order_dyn1, &subsys);
-  std::cout << *subsys;
-  delete subsys;
-  calex::parser::secondOrderParser(second_order_dyn2, &subsys);
-  std::cout << *subsys;
-  delete subsys;
-  calex::parser::secondOrderParser(second_order_dyndyn, &subsys);
-  std::cout << *subsys;
-  delete subsys;
+  std::cout << *calex::parser::secondOrderParser(second_order)
+    << std::endl;
+  std::cout << *calex::parser::secondOrderParser(second_order_dyn1)
+    << std::endl;
+  std::cout << *calex::parser::secondOrderParser(second_order_dyn2)
+    << std::endl;
+  std::cout << *calex::parser::secondOrderParser(second_order_dyndyn)
+    << std::endl;
 
   return 0;
 } // function main

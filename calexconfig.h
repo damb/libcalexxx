@@ -79,7 +79,7 @@ namespace calex
       //! constructor
       CalexConfig(std::string const infile, std::string const outfile);
       //! destructor
-      ~CalexConfig();
+      ~CalexConfig() { }
       // member access functions
       void set_comment(std::string const comment) { Mcomment = comment; }
       void set_alias(float const alias) { Malias = alias; }
@@ -90,18 +90,18 @@ namespace calex
       void set_ns1(int const ns1) { Mns1 = ns1; }
       void set_ns2(int const ns2) { Mns2 = ns2; }
       //! member access functions
-      void set_amp(SystemParameter& amp);
-      void set_del(SystemParameter& del);
-      void set_sub(SystemParameter& sub);
-      void set_til(SystemParameter& til);
+      void set_amp(std::shared_ptr<SystemParameter> amp);
+      void set_del(std::shared_ptr<SystemParameter> del);
+      void set_sub(std::shared_ptr<SystemParameter> sub);
+      void set_til(std::shared_ptr<SystemParameter> til);
       //! add calex system parameters to calex parameter files
-      void add_systemParameter(SystemParameter& param);
+      void add_systemParameter(std::shared_ptr<SystemParameter> param);
       //! add a calex subsystem configuration to the calex parameter file
-      void add_subsystem(CalexSubsystem& subsys);
+      void add_subsystem(std::shared_ptr<CalexSubsystem> subsys);
       //! remove all subsystems of configuration
       void clear_subsystems();
       //! remove subsystem specified
-      void remove_subsystem(CalexSubsystem* subsys);
+      void remove_subsystem(std::shared_ptr<CalexSubsystem> subsys);
       /*!
        * query function for GridSystemParameters
        *
@@ -139,7 +139,8 @@ namespace calex
       SystemParameter const& get_del() const { return *Mdel; }
       SystemParameter const& get_sub() const { return *Msub; }
       SystemParameter const& get_til() const { return *Mtil; }
-      std::vector<CalexSubsystem*> const& get_subsystems() const;
+      std::vector<std::shared_ptr<CalexSubsystem>> const& 
+        get_subsystems() const;
 
       //! overloaded ostream operator
       friend std::ostream& operator<<(
@@ -161,7 +162,7 @@ namespace calex
        * take place.
        */
       void get_gridSystemParameters(
-          std::vector<GridSystemParameter*>& param_vec);
+          std::vector<std::shared_ptr<GridSystemParameter>>& param_vec);
 
     private:
       //! header line of calex parameter file
@@ -205,16 +206,16 @@ namespace calex
       //! finish analyzing the data at \a ns2 samples from end
       int Mns2;
       //! gain factor (required system parameter)
-      SystemParameter* Mamp;
+      std::shared_ptr<SystemParameter> Mamp;
       //! time delay (required system parameter)
-      SystemParameter* Mdel;
+      std::shared_ptr<SystemParameter> Mdel;
       /*!
        * fraction sub - will be subtracted from the output to numerically
        * simulate a full bridge if a half-bridge circuit was used. Set start
        * value and uncertainty to zero if no bridge circuit was used.
        * (required system parameter)
        */
-      SystemParameter* Msub;
+      std::shared_ptr<SystemParameter> Msub;
       /*!
        * This parameter permits to subtract \a til times the twice integrated
        * synthetic output from the synthetic output signal, to compensate for
@@ -227,7 +228,7 @@ namespace calex
        * (table displacement along the sensitive axis), in the above units
        * (required system parameter)
        */
-      SystemParameter* Mtil;
+      std::shared_ptr<SystemParameter> Mtil;
       /*!
        * Further system parameters.
        *
@@ -237,9 +238,9 @@ namespace calex
        * output signal. Necessary if e.g. a geophone has a separate calibration
        * coil.
        */
-      std::vector<SystemParameter*> MsystemParameters;
+      std::vector<std::shared_ptr<SystemParameter>> MsystemParameters;
       //! vector of calex subsystems of the calex configuration
-      std::vector<CalexSubsystem*> MsubSystems;
+      std::vector<std::shared_ptr<CalexSubsystem>> MsubSystems;
       //! flag to save the state of synchronization
       bool MisSynchronized;
 
@@ -251,14 +252,13 @@ namespace calex
   {
     CALEX_assert(MisSynchronized,
         "Parameters not synchronized.");
-    std::vector<GridSystemParameter*> grid_params;
+    std::vector<std::shared_ptr<GridSystemParameter>> grid_params;
     get_gridSystemParameters(grid_params);
     CALEX_assert(data.size() == grid_params.size(),
         "Invalid parameter configuration.");
     for (size_t idx=0; idx < data.size(); ++idx)
     {
-      for (std::vector<GridSystemParameter*>::iterator it(
-            grid_params.begin()); it != grid_params.end(); ++it)
+      for (auto it(grid_params.begin()); it != grid_params.end(); ++it)
       {
         if(idx == static_cast<size_t>((*it)->get_coordinateId()))
         {
@@ -273,13 +273,14 @@ namespace calex
   template <typename Ctype>
   void CalexConfig::synchronize(opt::GlobalAlgorithm<Ctype, CalexResult>& algo)
   {
-    CALEX_assert(algo.getParameter().size() != 0,
+    // TODO TODO TODO TODO
+    CALEX_assert(algo.getParameterSpaceDimensions() != 0,
         "Parameters not yet assigned to liboptimizexx global algorithm.")
     // fetch order vector of parameters of builder
     std::vector<int> order(algo.getParameterSpaceBuilder().getParameterOrder(
-        algo.getParameter().size()));
+        algo.getParameterSpaceDimensions()));
     // synchronize grid system parameters
-    std::vector<GridSystemParameter*> grid_params;
+    std::vector<std::shared_ptr<GridSystemParameter>> grid_params;
     get_gridSystemParameters(grid_params);
     CALEX_assert(order.size() == grid_params.size(),
         "Invalid liboptimizexx parameter configuration.");
@@ -295,12 +296,11 @@ namespace calex
   void CalexConfig::set_gridSystemParameters(typename
       opt::GlobalAlgorithm<Ctype, CalexResult>& algo)
   {
-    std::vector<GridSystemParameter*> grid_params;
+    std::vector<std::shared_ptr<GridSystemParameter>> grid_params;
     get_gridSystemParameters(grid_params);
     CALEX_assert(grid_params.size() != 0,
        "No grid system parameters assigned.");
-    for (std::vector<GridSystemParameter*>::iterator it(
-          grid_params.begin()); it != grid_params.end(); ++it)
+    for (auto it(grid_params.begin()); it != grid_params.end(); ++it)
     {
       algo.addParameter(*it);
     }
