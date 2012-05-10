@@ -58,7 +58,7 @@ int main(int iargc, char* argv[])
   std::shared_ptr<calex::SystemParameter> sub_param(
       new calex::SystemParameter("sub",0.,0.));
   std::shared_ptr<calex::SystemParameter> til_param(
-      new calex::SystemParameter("sub",0.,0.));
+      new calex::SystemParameter("til",0.,0.));
   paramfile.set_amp(amp_param);
   paramfile.set_del(del_param);
   paramfile.set_sub(sub_param);
