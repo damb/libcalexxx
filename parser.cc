@@ -31,8 +31,9 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 27/03/2012   V0.1  Daniel Armbruster
- * 25/04/2012   V0.2  Make use of smart poiters and C++0x.
+ * 27/03/2012   V0.1    Daniel Armbruster
+ * 25/04/2012   V0.2    Make use of smart poiters and C++0x.
+ * 10/05/2012   V0.3    Bug fixed in function secondOrderParser().
  * 
  * ============================================================================
  */
@@ -139,10 +140,10 @@ namespace calex
       std::string param_str(str.substr(str.find("|")+1,
             findSecondSeparatorPosition(str)-1));
       std::shared_ptr<SystemParameter> per_ptr(
-          systemParameterParser(str.substr(3), "per"));
+          systemParameterParser(param_str, "per"));
       param_str = str.substr(type.size()+1+param_str.size()+1);
       std::shared_ptr<SystemParameter> dmp_ptr(
-          systemParameterParser(str.substr(3), "dmp"));
+          systemParameterParser(param_str, "dmp"));
 
       std::shared_ptr<CalexSubsystem> ret_ptr;
       if ("LP" == type)
