@@ -29,8 +29,7 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 14/03/2012  V0.1  Daniel Armbruster
- * 
+ * 14/03/2012   V0.1    Daniel Armbruster
  * ============================================================================
  */
  

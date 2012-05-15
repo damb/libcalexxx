@@ -29,7 +29,8 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 14/03/2012  V0.1  Daniel Armbruster
+ * 14/03/2012   V0.1  Daniel Armbruster
+ * 15/05/2012   V0.2  query function for grid system parameter names provided
  * 
  * ============================================================================
  */
@@ -39,6 +40,7 @@
 #include <list>
 #include <vector>
 #include <ostream>
+#include <algorithm>
 #include <calexxx/systemparameter.h>
 #include <calexxx/subsystem.h>
 #include <calexxx/resultdata.h>
@@ -130,6 +132,15 @@ namespace calex
        */
       template <typename Ctype>
       void synchronize(opt::GlobalAlgorithm<Ctype, CalexResult>& algo);
+      /*!
+       * query function for grid system parameter names
+       * 
+       * \return vector containing grid system parameter names in the correct
+       * order the parameter space uses the parameters
+       */
+      template <typename Ctype>
+      std::vector<std::string> get_gridSystemParameterNames(
+          opt::GlobalAlgorithm<Ctype, CalexResult>& algo);
       /*
        * check if configuration file has grid system parameters
        */
@@ -273,10 +284,9 @@ namespace calex
   template <typename Ctype>
   void CalexConfig::synchronize(opt::GlobalAlgorithm<Ctype, CalexResult>& algo)
   {
-    // TODO TODO TODO TODO
     CALEX_assert(algo.getParameterSpaceDimensions() != 0,
         "Parameters not yet assigned to liboptimizexx global algorithm.")
-    // fetch order vector of parameters of builder
+    // fetch parameter order vector of parameters of builder
     std::vector<int> order(algo.getParameterSpaceBuilder().getParameterOrder(
         algo.getParameterSpaceDimensions()));
     // synchronize grid system parameters
@@ -305,6 +315,28 @@ namespace calex
       algo.addParameter(*it);
     }
   } // function template CalexConfig::set_gridSystemParameters
+
+  /*-------------------------------------------------------------------------*/
+  template <typename Ctype>
+  std::vector<std::string> CalexConfig::get_gridSystemParameterNames(
+      typename opt::GlobalAlgorithm<Ctype, CalexResult>& algo)
+  {
+    std::vector<std::shared_ptr<GridSystemParameter>> grid_params;
+    get_gridSystemParameters(grid_params);
+    // convert pointers implicitly to usual calex system parameter pointers
+    // to make use of the get_nam() query function
+    std::vector<std::shared_ptr<SystemParameter>> params(grid_params.size());
+    copy(grid_params.begin(), grid_params.end(), params.begin());
+    // fetch parameter order vector of parameters of builder
+    std::vector<int> order(algo.getParameterSpaceBuilder().getParameterOrder(
+        algo.getParameterSpaceDimensions()));
+    std::vector<std::string> grid_param_names(order.size());
+    for (size_t j = 0; j < order.size(); ++j)
+    {
+      grid_param_names[j] = params.at(order.at(j))->get_nam();
+    }
+    return grid_param_names;
+  }
 
   /*-------------------------------------------------------------------------*/
 
