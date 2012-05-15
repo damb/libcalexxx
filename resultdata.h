@@ -31,7 +31,9 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 15/03/2012  V0.1  Daniel Armbruster
+ * 15/03/2012   V0.1    Daniel Armbruster
+ * 15/05/2012   V0.2    provide member funcition to write header information to
+ *                      an outputstream
  * 
  * ============================================================================
  */
@@ -77,6 +79,8 @@ namespace calex
       std::map<std::string, double> const& get_systemParameters() const;
       //! write the calex result data to an outputstream
       void writeLine(std::ostream& os) const;
+      //! write header information to an outputstream
+      void writeHeaderInfo(std::ostream& os) const;
 
       //! input stream operator
       friend std::istream& operator>>(std::istream& is, CalexResult& result);

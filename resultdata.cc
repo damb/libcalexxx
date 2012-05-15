@@ -31,7 +31,9 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 15/03/2012  V0.1  Daniel Armbruster
+ * 15/03/2012   V0.1    Daniel Armbruster
+ * 15/05/2012   V0.2    provide member funcition to write header information to
+ *                      an outputstream
  * 
  * ============================================================================
  */
@@ -74,6 +76,21 @@ namespace calex
     }
     os << oss.str() << std::endl;
   } // function CalexResult::writeLine
+
+  /*-------------------------------------------------------------------------*/
+  void CalexResult::writeHeaderInfo(std::ostream& os) const
+  {
+    os << std::setw(5) << std::right << "iter"
+      << std::setw(12) << std::right << "RMS"
+      << std::setw(12) << std::right << "amp"
+      << std::setw(12) << std::right << "del";
+    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
+        ++cit)
+    {
+      os << std::setw(12) << std::right << cit->first;
+    }
+    os << std::endl;
+  } // function CalexResult::writeHeaderInfo
 
   /*-------------------------------------------------------------------------*/
   void CalexResult::read(std::istream& is)

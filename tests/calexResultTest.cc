@@ -30,6 +30,7 @@
  * 
  * REVISIONS and CHANGES 
  * 20/03/2012  V0.1  Daniel Armbruster
+ * 15/05/2012  V0.2  Test header information.
  * 
  * ============================================================================
  */
@@ -53,6 +54,7 @@ int main(int iargc, char* argv[])
   // write result to stdout
   std::cout << result;
 
+  result.writeHeaderInfo(std::cout);
   result.writeLine(std::cout);
 
   return 0;

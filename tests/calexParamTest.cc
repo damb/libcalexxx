@@ -31,6 +31,7 @@
  * REVISIONS and CHANGES 
  * 20/03/2012  V0.1  Daniel Armbruster
  * 26/04/2012  V0.2  Make use of C++0x smart pointers.
+ * 15/05/2012  V0.3  Test header information.
  * 
  * ============================================================================
  */
