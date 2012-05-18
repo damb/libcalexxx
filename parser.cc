@@ -34,6 +34,7 @@
  * 27/03/2012   V0.1    Daniel Armbruster
  * 25/04/2012   V0.2    Make use of smart poiters and C++0x.
  * 10/05/2012   V0.3    Bug fixed in function secondOrderParser().
+ * 16/05/2012   V0.4    Detect parsing errors.
  * 
  * ============================================================================
  */
@@ -88,26 +89,32 @@ namespace calex
         // check if obligatory system parameter
         if (0 == id.size())
         {
-          id = str.substr(0,str.find("|"));
-          iss.str(str.substr(str.find("|")+1));
+          int sep = str.find("|");
+          CALEX_assert(std::string::npos != sep, "Invalid parameter passed.");
+          id = str.substr(0,sep);
+          iss.str(str.substr(sep+1));
         } else
         {
           iss.str(str);
         }
         iss >> std::fixed >> start >> c >> end >> c >> delta >> c >> unc;
+        CALEX_assert('|' == c, "Ivalid parameter passed.");
         ret_ptr.reset(new GridSystemParameter(id, unc, id, start, end, delta));
       } else
       {
         // check if obligatory system parameter
         if (0 == id.size())
         {
-          id = str.substr(0,str.find("|"));
-          iss.str(str.substr(str.find("|")+1));
+          int sep = str.find("|");
+          CALEX_assert(std::string::npos != sep, "Invalid parameter passed.");
+          id = str.substr(0,sep);
+          iss.str(str.substr(sep+1));
         } else
         {
           iss.str(str);
         }
         iss >> val >> c >> unc;
+        CALEX_assert('|' == c, "Ivalid parameter passed.");
         ret_ptr.reset(new SystemParameter(id, val, unc));
       }
       return ret_ptr;
