@@ -57,6 +57,17 @@ int main(int iargc, char* argv[])
   result.writeHeaderInfo(std::cout);
   result.writeLine(std::cout);
 
+  // create instance of calex result data class
+  calex::CalexResult result_second;
+  // read exemplary calex output file
+  std::ifstream ifs_second("calex.out.0");
+  // set result data
+  ifs_second >> result_second;
+  // write result to stdout
+  std::cout << result_second;
+
+  result.writeHeaderInfo(std::cout);
+  result.writeLine(std::cout);
   return 0;
 } // function main
 

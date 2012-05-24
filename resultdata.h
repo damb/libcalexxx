@@ -60,7 +60,8 @@ namespace calex
       typedef std::map<std::string, double> TsystemParameters;
     public:
       //! constructor
-      CalexResult() : Mcomputed(false) { }
+      CalexResult() : Mcomputed(false), Miter(0), Mrms(0), Mamp(0), Mdel(0)
+      { }
       //! constructor
       CalexResult(unsigned int const iter, double const rms, double const amp,
           double const del);

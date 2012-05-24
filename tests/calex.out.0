@@ -1,0 +1,68 @@
+
+calibration of STS-2 SN 99112? (IfE-Seismometer)                        
+
+ Opening file CALEX_A.output.sfe
+ control parameters for the iteration:
+    m   m0   m1   m2 maxit      qac     finac     alias
+    4    0    0    1   80  0.000010  0.001000  1.000000
+ anti- alias- filter of order 4, T=  1.00 s
+ writing file ausf
+ Opening file CALEX_A.input.sfe
+ writing file einf
+ reading start parameters:
+    amp     -41.500     5.100      
+    del       0.010     0.001      
+    sub       0.000     0.000      
+    til       0.000     0.000      
+    bp2:
+    per     120.000     1.000   bp2
+    dmp       0.707     0.010   bp2
+ data will be fitted from sample     25 to 158378
+ synthetics from start model:
+ writing file synt
+ misfit from start model:
+ writing file rest
+
+ iter         RMS         amp         del         per         dmp
+
+    0    0.014384  -41.500000    0.010000  120.000000    0.707000
+               +-    5.100000    0.001000    1.000000    0.010000
+
+
+    1    0.005623    0.105681   -0.000009   -0.003371    0.008314
+    2    0.005145    0.099739   -0.000985   -0.193646   -0.031213
+    3    0.005090    0.105726   -0.001110   -0.193982   -0.030669
+    4    0.005081    0.104989   -0.001526   -0.220941   -0.030776
+
+    5    0.005081    0.105297   -0.001528   -0.220950   -0.030717
+    6    0.005081    0.104084   -0.002479   -0.222495   -0.016525
+    7    0.005081    0.104125   -0.002485   -0.222508   -0.016522
+    8    0.005081    0.104060   -0.002690   -0.223312   -0.016635
+
+    9    0.005081    0.104118   -0.002692   -0.223317   -0.016631
+   10    0.005081    0.104103   -0.003072   -0.224003   -0.016605
+
+
+ final system parameters:
+
+ iter         RMS
+    0    0.005081
+
+ QUAD called  129 times: converged
+ output signal for final model...
+ writing file synt
+ residual error...
+ writing file rest
+
+ Transfer function (counts in ==> counts out):
+
+ The Laplace transform has 1 zero at zero frequency
+
+ It has           0  real poles, in rad/s:
+
+ and 1 pair of complex-conjugate poles, in rad/s:
+ -3.70789543E-02  3.71075720E-02
+ -3.70789543E-02 -3.71075720E-02
+
+ a plot-parameter file winplot.par was generated
+
