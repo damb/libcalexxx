@@ -89,7 +89,7 @@ namespace calex
         // check if obligatory system parameter
         if (0 == id.size())
         {
-          int sep = str.find("|");
+          size_t sep = str.find("|");
           CALEX_assert(std::string::npos != sep, "Invalid parameter passed.");
           id = str.substr(0,sep);
           iss.str(str.substr(sep+1));
@@ -105,7 +105,7 @@ namespace calex
         // check if obligatory system parameter
         if (0 == id.size())
         {
-          int sep = str.find("|");
+          size_t sep = str.find("|");
           CALEX_assert(std::string::npos != sep, "Invalid parameter passed.");
           id = str.substr(0,sep);
           iss.str(str.substr(sep+1));
