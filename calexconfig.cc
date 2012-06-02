@@ -85,7 +85,6 @@ namespace calex
     }
     if ((! Msub || !Msub->is_active()) && sub->is_active()) { ++Mm; }
     Msub = sub; 
-    std::cout << *Msub << std::endl;
   }
 
   /*-------------------------------------------------------------------------*/
