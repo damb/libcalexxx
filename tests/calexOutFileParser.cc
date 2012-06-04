@@ -63,7 +63,7 @@ int main(int iargc, char* argv[])
     "    SVN: $Id$\n" 
     " Author: Daniel Armbruster" "\n"
     "  Usage: calexOutFileParser [-v|--verbose] [-o|--overwrite]" "\n"
-    "           [-H|--header] [-f|--file arg]" "\n"
+    "           [-H|--header] [-p|--path] [-f|--file arg]" "\n"
     "           CALEXOUTFILE [CALEXOUTFILE [...]]" "\n"
     "     or: calexOutFileParser -V|--version" "\n"
     "     or: calexOutFileParser -h|--help" "\n"
