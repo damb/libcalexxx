@@ -22,30 +22,54 @@
 # 
 # REVISIONS and CHANGES
 # 15/03/2012	V0.1	Daniel Armbruster
+# 04/06/2012  V0.2  added calexOutFileParser
 #
 # ----------------------------------------------------------------------------
 CPPFLAGS=-I$(LOCINCLUDEDIR) 
 LDFLAGS=-L$(LOCLIBDIR) 
 
-CXXFLAGS=-fhonor-std -Wall $(FLAGS)
-CXXFLAGS=-Wall -pedantic $(FLAGS)
-CXXFLAGS=-Wall $(FLAGS)
-
-all:
-
 STANDARDTEST= calexParamTest calexResultTest commandlineParserTest 
+PROGRAMS= calexOutFileParser
+
+.PHONY: install
+install: $(addprefix $(LOCBINDIR)/,$(PROGRAMS))
+$(LOCBINDIR)/%: %
+	mkdir -pv $(LOCBINDIR)
+	/bin/mv -fv $< $(LOCBINDIR)
 
 clean:
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v
 	-/bin/rm -v $(STANDARDTEST)
+	-/bin/rm -v $(PROGRAMS)
+
+# =============================================================================
+#
+CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
+CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
+#
+$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR LOCBINDIR)
+$(call CHECKVARS, BOOST_FILESYSTEM_VERSION)
+
+FLAGS= -DBOOST_FILESYSTEM_VERSION=$(BOOST_FILESYSTEM_VERSION)
+FLAGS += $(MYFLAGS) -std=c++0x
+CFLAGS += -march=native -O2 -fno-reorder-blocks -fno-reorder-functions -pipe
+
+CXXFLAGS += -Wall $(FLAGS)
+LDFLAGS+=$(addprefix -L,$(LOCLIBDIR))
+CPPFLAGS+=$(addprefix -I,$(LOCINCLUDEDIR)) $(FLAGS)
 
 # ----------------------------------------------------------------------------
 
-$(addsuffix .o,$(STANDARDTEST)): %.o: %.cc
+$(addsuffix .o,$(STANDARDTEST) calexOutFileParser): %.o: %.cc
 	@$(CXX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS) $(FLAGS) -std=c++0x
 
 $(STANDARDTEST): %: %.o 	
 	@echo -e "\n[ Compiling test program: $@ ]\n"	
 	@$(CXX) -o $@ $< $(LDFLAGS) -lcalexxx -std=c++0x
+
+calexOutFileParser: %: %.o
+	@echo -e "\n[ Compiling test program: $@ ]\n"	
+	$(CXX) -o $@ $^ -I$(LOCINCLUDEDIR) -lcalexxx -lboost_filesystem \
+	-lboost_program_options -L$(LOCLIBDIR) $(CXXFLAGS) $(FLAGS) $(LDFLAGS)
 
 # ----- END OF Makefile -----
