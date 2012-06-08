@@ -101,7 +101,7 @@ namespace calex
     std::vector<std::string> names(nam, nam+sizeof(nam)/sizeof(std::string));
     std::vector<std::string>::iterator it(
         find(names.begin(), names.end(), param->get_nam()));
-    CALEX_assert(names.end() != it, "Illegal parameter added.");
+    CALEX_assert(names.end() == it, "Illegal parameter added.");
     MsystemParameters.push_back(param);
   }
 
