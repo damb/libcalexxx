@@ -21,15 +21,16 @@
 # Daniel Armbruster 15/03/2012
 # 
 # REVISIONS and CHANGES
-# 15/03/2012	V0.1	Daniel Armbruster
-# 04/06/2012  V0.2  added calexOutFileParser
+# 15/03/2012		V0.1		Daniel Armbruster
+# 04/06/2012  	V0.2  	added calexOutFileParser
+# 08/06/2012  	V0.3  	added calexParamFileGen
 #
 # ----------------------------------------------------------------------------
 CPPFLAGS=-I$(LOCINCLUDEDIR) 
 LDFLAGS=-L$(LOCLIBDIR) 
 
 STANDARDTEST= calexParamTest calexResultTest commandlineParserTest 
-PROGRAMS= calexOutFileParser
+PROGRAMS= calexOutFileParser calexParamFileGen
 
 .PHONY: install
 install: $(addprefix $(LOCBINDIR)/,$(PROGRAMS))
@@ -67,7 +68,7 @@ $(STANDARDTEST): %: %.o
 	@echo -e "\n[ Compiling test program: $@ ]\n"	
 	@$(CXX) -o $@ $< $(LDFLAGS) -lcalexxx -std=c++0x
 
-calexOutFileParser: %: %.o
+calexParamFileGen calexOutFileParser: %: %.o
 	@echo -e "\n[ Compiling test program: $@ ]\n"	
 	$(CXX) -o $@ $^ -I$(LOCINCLUDEDIR) -lcalexxx -lboost_filesystem \
 	-lboost_program_options -L$(LOCLIBDIR) $(CXXFLAGS) $(FLAGS) $(LDFLAGS)

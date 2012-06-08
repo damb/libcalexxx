@@ -75,7 +75,7 @@ int main(int iargc, char* argv[])
 
   // add subsystem to parameter file configuration
   paramfile.add_subsystem(lp2);
-  // write parameter file configuration to 
+  // write parameter file configuration to stdout
   std::cout << paramfile << std::endl;
 
   return 0;
