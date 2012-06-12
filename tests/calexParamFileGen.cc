@@ -340,6 +340,21 @@ int main(int iargc, char* argv[])
 
     // set parameter file comment
     paramfile.set_comment(vm["comment"].as<std::string>());
+    // set parameter file alias
+    paramfile.set_alias(vm["alias"].as<double>());
+    // set parameter file maxit
+    paramfile.set_maxit(vm["maxit"].as<int>());
+    // set parameter file qac
+    paramfile.set_qac(vm["qac"].as<double>());
+    // set parameter file finac
+    paramfile.set_finac(vm["finac"].as<double>());
+    // set parameter file ns1
+    paramfile.set_ns1(vm["ns1"].as<int>());
+    // set parameter file ns2
+    paramfile.set_ns2(vm["ns2"].as<int>());
+    // set parameter file m0
+    paramfile.set_m0(vm["m0"].as<int>());
+
     
     // set system parameters
     for (auto it(sys_params.begin()); it != sys_params.end(); ++it)
