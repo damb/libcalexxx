@@ -334,9 +334,15 @@ int main(int iargc, char* argv[])
         << endl;
     }
     // create instance of parameter file
+#if BOOST_FILESYSTEM_VERSION == 2
+    calex::CalexConfig paramfile(
+        vm["calib-in"].as<fs::path>().filename(),
+        vm["calib-out"].as<fs::path>().filename());
+#else
     calex::CalexConfig paramfile(
         vm["calib-in"].as<fs::path>().filename().string(),
         vm["calib-out"].as<fs::path>().filename().string());
+#endif
 
     // set parameter file comment
     paramfile.set_comment(vm["comment"].as<std::string>());
