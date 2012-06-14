@@ -32,15 +32,19 @@
  * 
  * REVISIONS and CHANGES 
  * 15/03/2012   V0.1    Daniel Armbruster
- * 15/05/2012   V0.2    provide member funcition to write header information to
+ * 15/05/2012   V0.2    provide member function to write header information to
  *                      an outputstream
+ * 14/06/2012   V0.3    Bug fix parsing a calex *.out file - amp and del system
+ *                      parameters from now on are deprecated
  * 
  * ============================================================================
  */
  
 #include <iostream>
-#include <map>
+#include <vector>
 #include <string>
+#include <utility>
+#include <calexxx/error.h>
 
 #ifndef _CALEX_RESULTDATA_H_
 #define _CALEX_RESULTDATA_H_
@@ -57,14 +61,16 @@ namespace calex
   class CalexResult
   {
     public:
-      typedef std::map<std::string, double> TsystemParameters;
+      typedef std::vector<std::pair<std::string, double>> TsystemParameters;
     public:
       //! constructor
-      CalexResult() : Mcomputed(false), Miter(0), Mrms(0), Mamp(0), Mdel(0)
+      CalexResult() : Mcomputed(false), Miter(0), Mrms(0)
       { }
       //! constructor
-      CalexResult(unsigned int const iter, double const rms, double const amp,
-          double const del);
+      CalexResult(unsigned int const iter, double const rms, 
+        TsystemParameters const params) : Mcomputed(true), Miter(iter),
+        Mrms(rms), MsystemParameters(params)
+      { }
 
       //! query function if entire data had been set
       bool isComputed() const { return Mcomputed; }
@@ -72,12 +78,9 @@ namespace calex
       unsigned int const& get_iter() const { return Miter; }
       //! query function for root mean square
       double const& get_rms() const { return Mrms; }
-      //! query function for amplitude factor
-      double const& get_amp() const { return Mamp; }
-      //! query function for delay
-      double const& get_del() const { return Mdel; }
       //! query function for additional system parameters
-      std::map<std::string, double> const& get_systemParameters() const;
+      std::vector<std::pair<std::string, double>> const& get_systemParameters()
+        const;
       //! write the calex result data to an outputstream
       void writeLine(std::ostream& os) const;
       //! write header information to an outputstream
@@ -102,10 +105,6 @@ namespace calex
       unsigned int Miter;
       //! root mean square
       double Mrms;
-      //! amplitude factor
-      double Mamp;
-      //! delay
-      double Mdel;
       //! additional result system parameters
       TsystemParameters MsystemParameters;
 

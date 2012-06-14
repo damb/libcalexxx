@@ -32,8 +32,10 @@
  * 
  * REVISIONS and CHANGES 
  * 15/03/2012   V0.1    Daniel Armbruster
- * 15/05/2012   V0.2    provide member funcition to write header information to
+ * 15/05/2012   V0.2    provide member function to write header information to
  *                      an outputstream
+ * 14/06/2012   V0.3    Bug fix parsing a calex *.out file - amp and del system
+ *                      parameters from now on are deprecated
  * 
  * ============================================================================
  */
@@ -49,13 +51,7 @@
 namespace calex
 {
   /*-------------------------------------------------------------------------*/
-  CalexResult::CalexResult(unsigned int const iter, double const rms,
-      double const amp, double const del) : Mcomputed(true), Miter(iter),
-      Mrms(rms), Mamp(amp), Mdel(del)
-  { }
-
-  /*-------------------------------------------------------------------------*/
-  std::map<std::string, double> const&
+  std::vector<std::pair<std::string, double>> const&
     CalexResult::get_systemParameters() const
   {
     return MsystemParameters;
@@ -66,13 +62,10 @@ namespace calex
   {
     std::ostringstream oss;
     oss << std::right << std::setw(5) << Miter
-      << std::setw(12) << std::right << std::fixed << Mrms
-      << std::setw(12) << std::right << std::fixed << Mamp
-      << std::setw(12) << std::right << std::fixed << Mdel;
-    for (TsystemParameters::const_iterator cit(MsystemParameters.begin());
-        cit != MsystemParameters.end(); ++cit)
+      << std::setw(12) << std::right << std::fixed << Mrms;
+    for (auto x : MsystemParameters)
     {
-      oss << std::setw(12) << std::right << std::fixed << cit->second;
+      oss << std::setw(12) << std::right << std::fixed << x.second;
     }
     os << oss.str() << std::endl;
   } // function CalexResult::writeLine
@@ -81,13 +74,10 @@ namespace calex
   void CalexResult::writeHeaderInfo(std::ostream& os) const
   {
     os << std::setw(5) << std::right << "iter"
-      << std::setw(12) << std::right << "RMS"
-      << std::setw(12) << std::right << "amp"
-      << std::setw(12) << std::right << "del";
-    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
-        ++cit)
+      << std::setw(12) << std::right << "RMS";
+    for (auto x : MsystemParameters)
     {
-      os << std::setw(12) << std::right << cit->first;
+      os << std::setw(12) << std::right << std::fixed << x.first;
     }
     os << std::endl;
   } // function CalexResult::writeHeaderInfo
@@ -107,7 +97,7 @@ namespace calex
           std::istringstream iss(line); 
           copy(std::istream_iterator<std::string>(iss),
             std::istream_iterator<std::string>(),
-            std::back_inserter<std::vector<std::string> >(names));
+            std::back_inserter<std::vector<std::string>>(names));
         }
 
         getline(is >> std::ws, line);
@@ -120,16 +110,15 @@ namespace calex
             std::back_inserter<std::vector<double> >(vals));
         }
 
-        CALEX_assert(vals.size() == names.size(),
+        CALEX_assert(vals.size() == names.size() && vals.size() >= 2,
             "Error while reading result data.");
         Miter = vals[0];
         Mrms = vals[1];
-        Mamp = vals[2];
-        Mdel = vals[3];
 
-        for (size_t i=4; i < vals.size(); ++i)
+        // add remaining result parameters
+        for (size_t i=2; i < vals.size(); ++i)
         {
-          MsystemParameters[names[i]] = vals[i];
+          MsystemParameters.push_back(std::make_pair(names[i], vals[i]));
         }
         break;
       }
@@ -142,25 +131,19 @@ namespace calex
   {
     os << " final system parameters:\n" << std::endl
       << std::setw(5) << std::right << "iter"
-      << std::setw(12) << std::right << "RMS"
-      << std::setw(12) << std::right << "amp"
-      << std::setw(12) << std::right << "del";
-    for (TsystemParameters::const_iterator cit(MsystemParameters.begin());
-        cit != MsystemParameters.end(); ++cit)
+      << std::setw(12) << std::right << "RMS";
+    for (auto x : MsystemParameters)
     {
-      os << std::setw(12) << std::right << cit->first;
+      os << std::setw(12) << std::right << x.first;
     }
     os << std::endl;
 
     std::stringstream ss;
     ss << std::right << std::setw(5) << Miter
-      << std::setw(12) << std::right << std::fixed << Mrms
-      << std::setw(12) << std::right << std::fixed << Mamp
-      << std::setw(12) << std::right << std::fixed << Mdel;
-    for (TsystemParameters::const_iterator cit(MsystemParameters.begin());
-        cit != MsystemParameters.end(); ++cit)
+      << std::setw(12) << std::right << std::fixed << Mrms;
+    for (auto x : MsystemParameters)
     {
-      ss << std::setw(12) << std::right << std::fixed << cit->second;
+      ss << std::setw(12) << std::right << std::fixed << x.second;
     }
     os << ss.str() << std::endl;
   } // function CalexResult::write
