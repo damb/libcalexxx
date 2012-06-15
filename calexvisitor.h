@@ -34,6 +34,8 @@
  * 15/03/2012  V0.1     Daniel Armbruster
  * 09/04/2012  V0.2     If V2 of the Boost filsystem is in use now construct
  *                      calex parameter filepath with thread ID.
+ * 15/04/2012  V0.3     Make update process of class calex::CalexConfig thread
+ *                      safe to avoid racing conditions.
  * 
  * ============================================================================
  */
@@ -44,9 +46,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <boost/filesystem.hpp>
-#if BOOST_FILESYSTEM_VERSION == 2
-  #include <boost/thread.hpp>
-#endif
+#include <boost/thread.hpp>
 #include <calexxx/calexconfig.h>
 #include <calexxx/resultdata.h>
 #include <calexxx/error.h>
@@ -72,6 +72,10 @@ namespace calex
    * store the result data within the liboptimizexx parameter space grids'
    * nodes.
    *
+   * From V0.3 updating class calex::CalexConfig had been made thread safe
+   * using the <a href="http://www.boost.org/doc/libs/release/libs/thread/">
+   * Boost thread library</a>.
+   *
    * \note calex::CalexApplication only will call calex::CalexConfig::update and
    * pass the current coordinates.
    * \code
@@ -81,6 +85,8 @@ namespace calex
    * \note If V2 of the Boost filesystem library in use the program using class
    * template calex::CalexApplication must link against \c boost_thread cause
    * calex parameter file names will be build containing the thread ID.
+   *
+   * \note
    */
   template <typename Ctype>
   class CalexApplication : 
@@ -117,6 +123,8 @@ namespace calex
       CalexConfig* McalexConfig;
       //! be verbose
       bool Mverbose;
+      //! mutual exclusion variable to guarantee thread safety
+      boost::mutex Mmutex; 
 
   }; // class template CalexApplication
 
@@ -124,23 +132,28 @@ namespace calex
   template <typename Ctype>
   void CalexApplication<Ctype>::operator()(opt::Node<Ctype, TresultType>* node)
   {
-    McalexConfig->update<Ctype>(node->getCoordinates());
+    fs::path param_path;
+    // first thread safe part
+    {
+      boost::lock_guard<boost::mutex> lock(Mmutex);
+      McalexConfig->update<Ctype>(node->getCoordinates());
 
-    // write calex parameter file to disk
+      // write calex parameter file to disk
 #if BOOST_FILESYSTEM_VERSION == 2
-    // If V2 of the Boost filesystem library is in use construct calex parameter
-    // file name containing the thread ID.
-    std::ostringstream oss;
-    oss << "calex-" << boost::this_thread::get_id() << ".par";
+      // If V2 of the Boost filesystem library is in use construct calex
+      // parameter file name containing the thread ID.
+      std::ostringstream oss;
+      oss << "calex-" << boost::this_thread::get_id() << ".par";
 
-    fs::path param_path(oss.str());
-    std::ofstream ofs(param_path.string().c_str());
+      param_path = oss.str();
+      std::ofstream ofs(param_path.string().c_str());
 #else
-    fs::path param_path(fs::unique_path("%%%%-%%%%-%%%%-%%%%.par"));
-    std::ofstream ofs(param_path.c_str());
+      param_path = fs::unique_path("%%%%-%%%%-%%%%-%%%%.par");
+      std::ofstream ofs(param_path.c_str());
 #endif
-    ofs << *McalexConfig;
-    ofs.close();
+      ofs << *McalexConfig;
+      ofs.close();
+    }
 
     // execute calex command
     //std::string calex_command("calex "+param_path.string());
@@ -155,16 +168,20 @@ namespace calex
     fs::path out_path(std::string(param_path.stem().string()+".out"));
     std::ifstream ifs(out_path.c_str());
 #endif
-    TresultType calex_result;
-    if (ifs)
+    // second thread safe part
     {
-      ifs >> calex_result;
-      
-      if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
-      node->setResultData(calex_result);
-      ifs.close();
+      boost::lock_guard<boost::mutex> lock(Mmutex);
+      TresultType calex_result;
+      if (ifs)
+      {
+        ifs >> calex_result;
+        
+        if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
+        node->setResultData(calex_result);
+        ifs.close();
 
-      node->setComputed();
+        node->setComputed();
+      }
     }
     // delete *.par and temporary calex files
     CALEX_assert(fs::remove(param_path) && fs::remove(out_path),

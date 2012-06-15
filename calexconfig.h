@@ -30,7 +30,7 @@
  * 
  * REVISIONS and CHANGES 
  * 14/03/2012   V0.1  Daniel Armbruster
- * 15/05/2012   V0.2  query function for grid system parameter names provided
+ * 15/05/2012   V0.2  Query function for grid system parameter names provided
  * 
  * ============================================================================
  */
@@ -41,6 +41,7 @@
 #include <vector>
 #include <ostream>
 #include <algorithm>
+#include <optimizexx/application.h>
 #include <calexxx/systemparameter.h>
 #include <calexxx/subsystem.h>
 #include <calexxx/resultdata.h>
@@ -59,7 +60,7 @@ namespace calex
 
   /*=========================================================================*/
   /*!
-   * Class representing a calex parameter configuration file.
+   * Class representing a calex parameter configuration file.\n
    *
    * \note Notice that only either CalexConfig::Mdmp or CalexConfig::Msub can
    * be set.
@@ -68,12 +69,7 @@ namespace calex
    * yet. This especially is a problem if using other global algorithms which
    * make use of refining the parameter space and adding subgrids.\n
    *
-   * \todo Use smart pointers instead of usual pointers. Up to now no memory
-   * leaks are produced by optcalex but in case other global algorithms will
-   * be supported and the \a set member access functions will be in use for
-   * several times smart pointers will guarantee that no memory leaks will be
-   * generated. This will have some effects as well on the subsystem classes
-   * i.e. calex::SecondOrderSubsystem.
+   * 
    */
   class CalexConfig
   {
