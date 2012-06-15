@@ -63,10 +63,18 @@ namespace calex
     std::ostringstream oss;
     oss << std::right << std::setw(5) << Miter
       << std::setw(12) << std::right << std::fixed << Mrms;
+#if ((__GNUC__ <= 4) && (__GNUC_MINOR__ < 6))
+    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
+      ++cit)
+    {
+      oss << std::setw(12) << std::right << std::fixed << cit->second;
+    }
+#else
     for (auto x : MsystemParameters)
     {
       oss << std::setw(12) << std::right << std::fixed << x.second;
     }
+#endif
     os << oss.str() << std::endl;
   } // function CalexResult::writeLine
 
@@ -75,10 +83,18 @@ namespace calex
   {
     os << std::setw(5) << std::right << "iter"
       << std::setw(12) << std::right << "RMS";
+#if ((__GNUC__ <= 4) && (__GNUC_MINOR__ < 6))
+    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
+      ++cit)
+    {
+      os << std::setw(12) << std::right << std::fixed << cit->first;
+    }
+#else
     for (auto x : MsystemParameters)
     {
       os << std::setw(12) << std::right << std::fixed << x.first;
     }
+#endif
     os << std::endl;
   } // function CalexResult::writeHeaderInfo
 
@@ -132,19 +148,35 @@ namespace calex
     os << " final system parameters:\n" << std::endl
       << std::setw(5) << std::right << "iter"
       << std::setw(12) << std::right << "RMS";
+#if ((__GNUC__ <= 4) && (__GNUC_MINOR__ < 6))
+    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
+      ++cit)
+    {
+      os << std::setw(12) << std::right << cit->first;
+    }
+#else
     for (auto x : MsystemParameters)
     {
       os << std::setw(12) << std::right << x.first;
     }
+#endif
     os << std::endl;
 
     std::stringstream ss;
     ss << std::right << std::setw(5) << Miter
       << std::setw(12) << std::right << std::fixed << Mrms;
+#if ((__GNUC__ <= 4) && (__GNUC_MINOR__ < 6))
+    for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
+      ++cit)
+    {
+      ss << std::setw(12) << std::right << std::fixed << cit->second;
+    }
+#else
     for (auto x : MsystemParameters)
     {
       ss << std::setw(12) << std::right << std::fixed << x.second;
     }
+#endif
     os << ss.str() << std::endl;
   } // function CalexResult::write
 
