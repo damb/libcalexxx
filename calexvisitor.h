@@ -133,7 +133,7 @@ namespace calex
   void CalexApplication<Ctype>::operator()(opt::Node<Ctype, TresultType>* node)
   {
     fs::path param_path;
-    // first thread safe part
+    // thread safe part
     {
       boost::lock_guard<boost::mutex> lock(Mmutex);
       McalexConfig->update<Ctype>(node->getCoordinates());
@@ -168,20 +168,16 @@ namespace calex
     fs::path out_path(std::string(param_path.stem().string()+".out"));
     std::ifstream ifs(out_path.c_str());
 #endif
-    // second thread safe part
+    TresultType calex_result;
+    if (ifs)
     {
-      boost::lock_guard<boost::mutex> lock(Mmutex);
-      TresultType calex_result;
-      if (ifs)
-      {
-        ifs >> calex_result;
-        
-        if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
-        node->setResultData(calex_result);
-        ifs.close();
+      ifs >> calex_result;
+      
+      if (Mverbose) { std::cout << "Result: " << calex_result << std::endl; }
+      node->setResultData(calex_result);
+      ifs.close();
 
-        node->setComputed();
-      }
+      node->setComputed();
     }
     // delete *.par and temporary calex files
     CALEX_assert(fs::remove(param_path) && fs::remove(out_path),
