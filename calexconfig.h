@@ -31,6 +31,7 @@
  * REVISIONS and CHANGES 
  * 14/03/2012   V0.1  Daniel Armbruster
  * 15/05/2012   V0.2  Query function for grid system parameter names provided
+ * 05/07/2012   V0.3  Query function for number of active parameters added.
  * 
  * ============================================================================
  */
@@ -137,10 +138,13 @@ namespace calex
       template <typename Ctype>
       std::vector<std::string> get_gridSystemParameterNames(
           opt::GlobalAlgorithm<Ctype, CalexResult>& algo);
-      /*
+      /*!
        * check if configuration file has grid system parameters
        */
       bool hasGridSystemParameters();
+      //! query function for number of active parameters in inversion
+      unsigned int get_numActiveParameters() const { return Mm; }
+      unsigned int get_maxit() const { return Mmaxit; }
       //! member query functions
       SystemParameter const& get_amp() const { return *Mamp; }
       SystemParameter const& get_del() const { return *Mdel; }
