@@ -30,6 +30,8 @@
  * 
  * REVISIONS and CHANGES 
  * 14/03/2012   V0.1    Daniel Armbruster
+ * 05/07/2012   V0.1.1  add whitespace before parameter file namings in write
+ *                      function
  *
  * ============================================================================
  */
@@ -197,17 +199,17 @@ namespace calex
     ss.precision(5);
     ss << std::setw(6) << std::left << std::fixed << Malias << " alias" 
       << std::endl
-      << std::setw(6) << std::left << Mm << "m" << std::endl
-      << std::setw(6) << std::left << Mm0 << "m0" << std::endl
-      << std::setw(6) << std::left << Mm1 << "m1" << std::endl
-      << std::setw(6) << std::left << Mm2 << "m2" << std::endl
-      << std::setw(6) << std::left << Mmaxit << "maxit" << std::endl
+      << std::setw(6) << std::left << Mm << " m" << std::endl
+      << std::setw(6) << std::left << Mm0 << " m0" << std::endl
+      << std::setw(6) << std::left << Mm1 << " m1" << std::endl
+      << std::setw(6) << std::left << Mm2 << " m2" << std::endl
+      << std::setw(6) << std::left << Mmaxit << " maxit" << std::endl
       << std::setw(6) << std::left << std::scientific << Mqac << " qac"
       << std::endl
       << std::setw(6) << std::left << std::scientific << Mfinac << " finac" 
       << std::endl
-      << std::setw(6) << std::left << Mns1 << "ns1" << std::endl
-      << std::setw(6) << std::left << Mns2 << "ns2" << std::endl;
+      << std::setw(10) << std::left << Mns1 << " ns1" << std::endl
+      << std::setw(10) << std::left << Mns2 << " ns2" << std::endl;
     os << ss.str() << std::endl;
     os << *Mamp << *Mdel << *Msub << *Mtil << std::endl;
     for (auto cit(MsystemParameters.cbegin()); cit != MsystemParameters.cend();
