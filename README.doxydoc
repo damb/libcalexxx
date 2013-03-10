@@ -31,6 +31,12 @@
 \version V0.1
 $Id: $
 
+\warning
+<b>The library until now only provides a parser \c calex.out files with up to \c
+4 parameters to optimize. Parsing such files will fail in case more parameters
+are given.
+</b>
+
   Contents of this page:
   - \ref sec_concept
   - \ref sec_dependencies
