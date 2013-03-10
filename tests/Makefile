@@ -26,17 +26,17 @@
 # 08/06/2012  	V0.3  	added calexParamFileGen
 #
 # ----------------------------------------------------------------------------
-CPPFLAGS=-I$(LOCINCLUDEDIR) 
-LDFLAGS=-L$(LOCLIBDIR) 
+CPPFLAGS=-I$(LOCALINCLUDEDIR) 
+LDFLAGS=-L$(LOCALLIBDIR) 
 
 STANDARDTEST= calexParamTest calexResultTest commandlineParserTest 
 PROGRAMS= calexOutFileParser calexParamFileGen
 
 .PHONY: install
-install: $(addprefix $(LOCBINDIR)/,$(PROGRAMS))
-$(LOCBINDIR)/%: %
-	mkdir -pv $(LOCBINDIR)
-	/bin/mv -fv $< $(LOCBINDIR)
+install: $(addprefix $(LOCALBINDIR)/,$(PROGRAMS))
+$(LOCALBINDIR)/%: %
+	mkdir -pv $(LOCALBINDIR)
+	/bin/mv -fv $< $(LOCALBINDIR)
 
 clean:
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v
@@ -48,7 +48,7 @@ clean:
 CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
 CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
 #
-$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR LOCBINDIR)
+$(call CHECKVARS,LOCALINCLUDEDIR LOCALLIBDIR LOCALBINDIR)
 $(call CHECKVARS, BOOST_FILESYSTEM_VERSION)
 
 FLAGS= -DBOOST_FILESYSTEM_VERSION=$(BOOST_FILESYSTEM_VERSION)
@@ -56,8 +56,8 @@ FLAGS += $(MYFLAGS) -std=c++0x
 CFLAGS += -march=native -O2 -fno-reorder-blocks -fno-reorder-functions -pipe
 
 CXXFLAGS += -Wall $(FLAGS)
-LDFLAGS+=$(addprefix -L,$(LOCLIBDIR))
-CPPFLAGS+=$(addprefix -I,$(LOCINCLUDEDIR)) $(FLAGS)
+LDFLAGS+=$(addprefix -L,$(LOCALLIBDIR))
+CPPFLAGS+=$(addprefix -I,$(LOCALINCLUDEDIR)) $(FLAGS)
 
 # ----------------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ $(STANDARDTEST): %: %.o
 
 calexParamFileGen calexOutFileParser: %: %.o
 	@echo -e "\n[ Compiling test program: $@ ]\n"	
-	$(CXX) -o $@ $^ -I$(LOCINCLUDEDIR) -lcalexxx -lboost_filesystem \
-	-lboost_program_options -L$(LOCLIBDIR) $(CXXFLAGS) $(FLAGS) $(LDFLAGS)
+	$(CXX) -o $@ $^ -I$(LOCALINCLUDEDIR) -lcalexxx -lboost_filesystem \
+	-lboost_program_options -L$(LOCALLIBDIR) $(CXXFLAGS) $(FLAGS) $(LDFLAGS)
 
 # ----- END OF Makefile -----
