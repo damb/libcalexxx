@@ -26,8 +26,6 @@
 # ----------------------------------------------------------------------------
 #
 
-CALEXCONFIG=STS2
-
 .PHONY: all
 all: install doc 
 
@@ -43,10 +41,10 @@ tests: reinstall $(patsubst %.cc,%,$(TESTS))
 LIBRARIES=libcalexxx.a libcalexxx.so
 
 .PHONY: install
-install: $(addprefix $(LOCLIBDIR)/,$(LIBRARIES))
-$(LOCLIBDIR)/%: install-include %
-	mkdir -pv $(LOCLIBDIR)
-	/bin/mv -fv $(word 2,$^) $(LOCLIBDIR)
+install: $(addprefix $(LOCALLIBDIR)/,$(LIBRARIES))
+$(LOCALLIBDIR)/%: install-include %
+	mkdir -pv $(LOCALLIBDIR)
+	/bin/mv -fv $(word 2,$^) $(LOCALLIBDIR)
 
 # ============================================================================
 # a variable definition to check variable settings
@@ -56,7 +54,7 @@ CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
 CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
 
 # check for required variables
-$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR TF_WWWBASEDIR)
+$(call CHECKVARS,LOCALINCLUDEDIR LOCALLIBDIR DOCWWWBASEDIR)
 $(call CHECKVARS, BOOST_FILESYSTEM_VERSION)
 
 #======================================================================
@@ -72,9 +70,9 @@ HEADERS=$(shell find . -name \*.h)
 SRC=$(wildcard *.cc) 
 
 # place where we will copy header files
-INCINSTALLPATH=$(LOCINCLUDEDIR)/calexxx
+INCINSTALLPATH=$(LOCALINCLUDEDIR)/calexxx
 # place where we will copy the binary library
-LIBINSTALLPATH=$(LOCLIBDIR)
+LIBINSTALLPATH=$(LOCALLIBDIR)
 
 # name of headers with comments stripped off (these are linked to your include
 # directory)
@@ -110,8 +108,8 @@ FLAGS+= -DBOOST_FILESYSTEM_VERSION=$(BOOST_FILESYSTEM_VERSION)
 FLAGS+=$(MYFLAGS) -fPIC -march=native -O2 -fno-reorder-blocks \
 			 -fno-reorder-functions -pipe -std=c++0x
 CXXFLAGS+=-Wall $(FLAGS)
-LDFLAGS=$(addprefix -L,$(LOCLIBDIR))
-CPPFLAGS=$(addprefix -I,$(LOCINCLUDEDIR)) $(FLAGS)
+LDFLAGS=$(addprefix -L,$(LOCALLIBDIR))
+CPPFLAGS=$(addprefix -I,$(LOCALINCLUDEDIR)) $(FLAGS)
 
 #======================================================================
 # targets
@@ -238,13 +236,13 @@ reinstall:
 # directory.
 #
 
-$(call CHECKVARS,TF_WWWBASEDIR TF_BROWSER)
+$(call CHECKVARS,DOCWWWBASEDIR BROWSER)
 
-DOXYWWWPATH=$(TF_WWWBASEDIR)/libcalexxx
+DOXYWWWPATH=$(DOCWWWBASEDIR)/libcalexxx
 
 .PHONY: doxyclean doxyview doxydoc doxyconf
 
-doxyclean: ;/bin/rm -rfv $(TF_WWWBASEDIR)/libcalexxx doxydoc.xxx
+doxyclean: ;/bin/rm -rfv $(DOCWWWBASEDIR)/libcalexxx doxydoc.xxx
 
 DOXYSRC=$(README) $(HEADERS) $(SRC) 
 #  tests/f77procs.P tests/f77procs.f \
@@ -266,7 +264,7 @@ $(DOXYWWWPATH)/html/index.html: doxydoc.xxx $(DOXYSRC)
 doxydoc: $(DOXYWWWPATH)/html/index.html
 
 doxyview: $(DOXYWWWPATH)/html/index.html
-	$(TF_BROWSER) file:$< &
+	$(BROWSER) file:$< &
 
 #======================================================================
 # delegate test targets
