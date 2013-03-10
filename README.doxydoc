@@ -74,7 +74,7 @@ V3 of the filesystem library so that setting the variable according
 BOOST_FILESYSTEM_VERSION=3
 \endcode
 in your \a ~/.bashrc file will do its job. Boost releases greater than 1.47 do
-not support anymore Version 2 of the filesystem library though setting the
+not support anymore Version 2 of the filesystem library such that setting the
 variable to \c 3 is highly recommended.\n
 In case there are minor releases than Boost version 1.44 in use just set this
 variable to
