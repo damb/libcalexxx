@@ -35,6 +35,9 @@
  * 25/04/2012   V0.2    Make use of smart poiters and C++0x.
  * 10/05/2012   V0.3    Bug fixed in function secondOrderParser().
  * 16/05/2012   V0.4    Detect parsing errors.
+ * 11/03/2013   V0.5    Fix bug in second-order subsystem parser; replaced
+ *                      findSecondSeparatorPosition with 
+ *                      findIndexOfNthOccurrence 
  * 
  * ============================================================================
  */
@@ -56,16 +59,18 @@ namespace calex
     namespace 
     {
 
-      int findSecondSeparatorPosition(std::string const& str, char sep)
+      int findIndexOfNthOccurrence(std::string const& str, char sep, int n)
       {
-        if (std::string::npos != str.find(sep))
+        int cnt = 0;
+        for (unsigned int j=0; j < str.size(); ++j)
         {
-          std::string tmp(str.substr(str.find(sep)+1));
-          if (std::string::npos != tmp.find(sep))
-            return tmp.find(sep)+str.size()-tmp.size();
+          if (str[j] == sep)
+          {
+            if (++cnt == n) { return j; }
+          }
         }
         return -1;
-      } // function getSecondSeparator
+      } // function findIndexOfNthOccurrence
 
     } // namespace (unnamed)
 
@@ -96,9 +101,11 @@ namespace calex
         } else
         {
           iss.str(str);
+          std::cout << iss.str() << std::endl;
         }
         iss >> std::fixed >> start >> c >> end >> c >> delta >> c >> unc;
-        CALEX_assert('|' == c, "Ivalid parameter passed.");
+        std::cout << "Character: " << c << std::endl;
+        CALEX_assert('|' == c, "Invalid parameter passed.");
         ret_ptr.reset(new GridSystemParameter(id, unc, id, start, end, delta));
       } else
       {
@@ -145,7 +152,7 @@ namespace calex
     {
       std::string type(str.substr(0,2));
       std::string param_str(str.substr(str.find("|")+1,
-            findSecondSeparatorPosition(str)-1));
+        findIndexOfNthOccurrence(str, '|', 3)-str.find("|")-1));
       std::shared_ptr<SystemParameter> per_ptr(
           systemParameterParser(param_str, "per"));
       param_str = str.substr(type.size()+1+param_str.size()+1);
