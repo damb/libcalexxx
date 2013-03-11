@@ -101,10 +101,8 @@ namespace calex
         } else
         {
           iss.str(str);
-          std::cout << iss.str() << std::endl;
         }
         iss >> std::fixed >> start >> c >> end >> c >> delta >> c >> unc;
-        std::cout << "Character: " << c << std::endl;
         CALEX_assert('|' == c, "Invalid parameter passed.");
         ret_ptr.reset(new GridSystemParameter(id, unc, id, start, end, delta));
       } else
