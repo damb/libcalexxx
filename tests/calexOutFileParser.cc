@@ -158,10 +158,14 @@ int main(int iargc, char* argv[])
         if (vm.count("file"))
         {
           const fs::path& outpath = vm["file"].as<fs::path>();
+          if (infiles.cbegin() == cit)
+          {
+            fs::remove(outpath);
+          }
 #if BOOST_FILESYSTEM_VERSION == 2
-          std::ofstream ofs(outpath.string().c_str());
+          std::ofstream ofs(outpath.string().c_str(), std::ios::app);
 #else
-          std::ofstream ofs(outpath.c_str());
+          std::ofstream ofs(outpath.c_str(), std::ios::app);
 #endif
           ofs << cit->filename() << " ";
           if (vm.count("header")) 
