@@ -32,11 +32,13 @@
  * 
  * REVISIONS and CHANGES 
  * 07/06/2012   V0.1    Daniel Armbruster
+ * 14/03/2013   V0.2    bug fixed - append to output file instead of overwriting
+ *                      it
  * 
  * ============================================================================
  */
  
-#define CALEXPARAMFILEGEN_VERSION "V0.1"
+#define CALEXPARAMFILEGEN_VERSION "V0.2"
 #define CALEXPARAMFILEGEN_LICENSE "GPLv2+"
 
 #include <iostream>
